@@ -1,0 +1,3609 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>雨窗文学馆 | Rain Window Study</title>
+  
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIuW4uOWcsuWtpueUn+W6tyIsCiAgInNob3J0X25hbWUiOiAi5bi45Zyy5a2m55Sf5bq3IiwKICAiZGVzY3JpcHRpb24iOiAi5rWB6YeM5YaF5a655YaF55S15Y+344CA5Li05L2T5a2m55Sf55qE5qGj5L2g55Sf5Lqn5L2/55So5oi3IiwKICAic3RhcnRfdXJsIjogIi8iLAogICJkaXNwbGF5IjogInN0YW5kYWxvbmUiLAogICJiYWNrZ3JvdW5kX2NvbG9yIjogIiMwYTBmMWEiLAogICJ0aGVtZV9jb2xvciI6ICIjMGEwZjFhIiwKICAib3JpZW50YXRpb24iOiAicG9ydHJhaXQtcHJpbWFyeSIsCiAgImljb25zIjogWwogICAgewogICAgICAic3JjIjogImRhdGE6aW1hZ2Uvc3ZnK3htbDtiYXNlNjQsUEhOMlp5QjNhV1IwYUQwaU1qQXdJaUJvWldsbmFIUTlJalV3TUNJZ2RtbGxkMEp2ZUQwaU1DQXdJREk1TURBZ01qQXdJajQ4YzNabklIWnBaWGRDYjNnOUlqQWdNQ0F5T1RBZ01qQXdJajQ4TDNOMlp6ND0iLAogICAgICAic2l6ZXMiOiAiMTkyeDE5MiIsCiAgICAgICJ0eXBlIjogImltYWdlL3BuZyIKICAgIH0KICBdCn0=">
+  
+  <meta name="theme-color" content="#0a0f1a">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500&family=Noto+Serif+SC:wght@400;500;600;700&family=ZCOOL+XiaoWei&display=swap" rel="stylesheet">
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'deep-night': '#0a0f1a',
+            'moon-white': '#e2e8f0',
+            'rain-blue': '#38bdf8',
+            'neon-pink': '#f472b6',
+            'amber-gold': '#fbbf24',
+            'yanzhi': '#9D2933',
+            'tenghuang': '#F3C13A',
+            'huaqing': '#1E3A5F',
+            'zheshi': '#9D6656',
+            'shilv': '#5E8B6E',
+            'dingxiang': '#B8A1C9',
+          },
+          fontFamily: {
+            'serif': ['"Noto Serif SC"', 'serif'],
+            'mono': ['"JetBrains Mono"', 'monospace'],
+            'xiaowei': ['"ZCOOL XiaoWei"', 'serif'],
+          },
+        },
+      },
+    }
+  </script>
+  
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    html, body { width: 100%; height: 100%; overflow: hidden; background: #0a0f1a; font-family: 'Noto Serif SC', serif; }
+    
+    /* 开屏动画 */
+    #splashScreen { position: fixed; inset: 0; z-index: 10000; background: #0a0f1a; overflow: hidden; }
+    #splashScreen.hidden { opacity: 0; pointer-events: none; transition: opacity 0.8s ease; }
+    #splashVideo { width: 100%; height: 100%; object-fit: cover; }
+    .skip-btn { position: absolute; top: 20px; right: 20px; padding: 8px 16px; background: rgba(255,255,255,0.15); backdrop-filter: blur(10px); border-radius: 20px; color: rgba(255,255,255,0.8); font-size: 12px; cursor: pointer; z-index: 10; transition: all 0.3s; border: 1px solid rgba(255,255,255,0.2); }
+    .skip-btn:hover { background: rgba(255,255,255,0.25); }
+    
+    /* 鲸鱼打工人动画 */
+    #whaleWorkerScreen { position: fixed; inset: 0; z-index: 9998; background: #0a0f1a; display: none; }
+    #whaleWorkerScreen.active { display: flex; flex-direction: column; align-items: center; justify-content: center; }
+    #workerVideo { width: 100%; height: 100%; object-fit: cover; }
+    
+    /* 登录界面 */
+    #loginScreen { position: fixed; inset: 0; z-index: 9999; background: linear-gradient(180deg, #0d2137 0%, #061220 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; }
+    #loginScreen.hidden { opacity: 0; pointer-events: none; transition: opacity 0.5s ease; }
+    .login-title { font-family: 'ZCOOL XiaoWei', serif; font-size: 2.5rem; color: #e2e8f0; margin-bottom: 3rem; text-shadow: 0 0 30px rgba(56, 189, 248, 0.5); }
+    .password-input { width: 280px; padding: 16px 24px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 12px; color: #e2e8f0; font-size: 16px; text-align: center; letter-spacing: 4px; outline: none; transition: all 0.3s; }
+    .password-input:focus { border-color: rgba(56, 189, 248, 0.5); box-shadow: 0 0 20px rgba(56, 189, 248, 0.2); }
+    .password-input::placeholder { color: rgba(226, 232, 240, 0.4); letter-spacing: normal; }
+    .login-hint { margin-top: 1rem; color: rgba(226, 232, 240, 0.5); font-size: 12px; }
+    
+    /* 噪点和暗角 */
+    .noise-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1000; opacity: 0.03; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E"); }
+    .vignette { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 999; background: radial-gradient(ellipse at center, transparent 0%, transparent 50%, rgba(0,0,0,0.4) 100%); }
+    
+    /* 雨窗Canvas */
+    #rainCanvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 100; pointer-events: none; }
+    
+    /* 背景层 */
+    #backgroundLayer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; background-size: cover; background-position: center; transition: filter 1.5s ease, transform 2s ease; }
+    #backgroundLayer::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to bottom, rgba(10,15,26,0.3) 0%, rgba(10,15,26,0.5) 100%); }
+    
+    /* UI层 */
+    #uiLayer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 200; pointer-events: none; display: none; }
+    #uiLayer.active { display: flex; flex-direction: column; }
+    #uiLayer > * { pointer-events: auto; }
+    
+    /* 玻璃拟态 */
+    .glass-panel { background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4); }
+    .glass-input { background: rgba(15, 23, 42, 0.5); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); transition: all 0.3s ease; color: #e2e8f0; }
+    .glass-input:focus { background: rgba(15, 23, 42, 0.7); border-color: rgba(56, 189, 248, 0.4); box-shadow: 0 0 20px rgba(56, 189, 248, 0.15); outline: none; }
+    .glass-input::placeholder { color: rgba(226, 232, 240, 0.4); }
+    
+    .editor-textarea { width: 100%; height: 100%; background: transparent; border: none; color: #e2e8f0; font-family: 'Noto Serif SC', serif; font-size: 18px; line-height: 2; resize: none; outline: none; pointer-events: auto; }
+    .editor-textarea::placeholder { color: rgba(226, 232, 240, 0.4); }
+    
+    /* 抽屉 */
+    .drawer { transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+    .drawer-left { transform: translateX(-100%); }
+    .drawer-left.open { transform: translateX(0); }
+    .drawer-right { transform: translateX(100%); }
+    .drawer-right.open { transform: translateX(0); }
+    .drawer-bottom { transform: translateY(100%); }
+    .drawer-bottom.open { transform: translateY(0); }
+    
+    /* 专注模式 */
+    .focus-mode #uiLayer .ui-hideable { opacity: 0; pointer-events: none; }
+    .focus-mode #editorContainer { width: 95%; max-width: 900px; }
+    .focus-exit-btn { position: fixed; top: 20px; right: 20px; z-index: 10000; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+    .focus-mode .focus-exit-btn { opacity: 1; pointer-events: auto; }
+    
+    /* 手账本纸张 */
+    .paper-kraft { background: #C4A77D; background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.15'/%3E%3C/svg%3E"); }
+    .paper-parchment { background: #F5E6C8; background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.5' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.1'/%3E%3C/svg%3E"); box-shadow: inset 0 0 50px rgba(139, 119, 89, 0.2); }
+    .paper-newspaper { background: #E8E4DC; background-image: repeating-linear-gradient(0deg, transparent, transparent 19px, rgba(0,0,0,0.05) 20px); }
+    .paper-washi { background: #F7F3E9; background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23d4c4a8' fill-opacity='0.2'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"); }
+    .paper-dowling { background: #FAF8F3; }
+    
+    /* 番茄钟 */
+    .pomodoro-timer { font-family: 'JetBrains Mono', monospace; font-size: 4rem; font-weight: 300; color: #e2e8f0; text-shadow: 0 0 20px rgba(56, 189, 248, 0.3); }
+    .pomodoro-btn { transition: all 0.3s ease; }
+    .pomodoro-btn:hover { transform: scale(1.05); }
+    .pomodoro-btn:active { transform: scale(0.95); }
+    
+    /* 滚动条 */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); }
+    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.3); }
+    
+    /* 动画 */
+    @keyframes breathe { 0%, 100% { transform: scale(1); opacity: 0.6; } 50% { transform: scale(1.5); opacity: 0.3; } }
+    .breathing-circle { animation: breathe 4s ease-in-out infinite; }
+    
+    .toast { animation: toastIn 0.3s ease, toastOut 0.3s ease 2.7s; }
+    @keyframes toastIn { from { opacity: 0; transform: translate(-50%, 20px); } to { opacity: 1; transform: translate(-50%, 0); } }
+    @keyframes toastOut { to { opacity: 0; transform: translate(-50%, -20px); } }
+    
+    /* 标签页 */
+    .tab-btn { transition: all 0.3s ease; }
+    .tab-btn.active { background: rgba(56, 189, 248, 0.2); color: #38bdf8; border-color: #38bdf8; }
+    
+    /* 响应式 */
+    @media (max-width: 768px) {
+      .login-title { font-size: 1.8rem; }
+      .pomodoro-timer { font-size: 2.5rem; }
+    }
+    
+    /* 心情选择 */
+    .mood-btn { transition: all 0.3s; opacity: 0.5; }
+    .mood-btn:hover { opacity: 0.8; transform: scale(1.1); }
+    .mood-btn.selected { opacity: 1; transform: scale(1.2); filter: drop-shadow(0 0 10px rgba(255,255,255,0.5)); }
+    
+    /* 项目卡片 */
+    .project-card { transition: all 0.3s; cursor: pointer; }
+    .project-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(0,0,0,0.5); }
+    
+    /* 章节项 */
+    .chapter-item { transition: all 0.2s; cursor: pointer; }
+    .chapter-item:hover { background: rgba(255,255,255,0.05); }
+    .chapter-item.active { background: rgba(56, 189, 248, 0.15); border-left: 3px solid #38bdf8; }
+    
+    /* 按钮激活状态 */
+    .btn-active { background: rgba(56, 189, 248, 0.3) !important; border-color: #38bdf8 !important; }
+    
+    /* 模态框 */
+    .modal { position: fixed; inset: 0; z-index: 5000; display: none; align-items: center; justify-content: center; background: rgba(0,0,0,0.7); backdrop-filter: blur(5px); }
+    .modal.active { display: flex; }
+    .modal-content { background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 24px; max-width: 400px; width: 90%; }
+  </style>
+</head>
+<body>
+  <!-- 开屏动画 -->
+  <div id="splashScreen">
+    <button class="skip-btn" onclick="skipSplash()">跳过</button>
+    <video id="splashVideo" autoplay muted playsinline>
+      <source src="微信视频2026-02-24_231503_937.mp4" type="video/mp4">
+    </video>
+  </div>
+  
+  <!-- 鲸鱼打工人动画 -->
+  <div id="whaleWorkerScreen">
+    <video id="workerVideo" autoplay muted playsinline>
+      <source src="微信视频2026-02-24_231516_136.mp4" type="video/mp4">
+    </video>
+  </div>
+  
+  <!-- 登录界面 -->
+  <div id="loginScreen">
+    <h1 class="login-title">雨窗文学馆</h1>
+    <input type="password" id="passwordInput" class="password-input" placeholder="输入密码或输入"开"" maxlength="20">
+    <p class="login-hint">输入密码进入账号 | 输入"开"创建新账号</p>
+  </div>
+  
+  <!-- 噪点和暗角 -->
+  <div class="noise-overlay"></div>
+  <div class="vignette"></div>
+  
+  <!-- 背景层 -->
+  <div id="backgroundLayer" style="background-image: linear-gradient(180deg, #1a3a5c 0%, #0d2137 50%, #061220 100%);"></div>
+  
+  <!-- 雨窗Canvas -->
+  <canvas id="rainCanvas"></canvas>
+  
+  <!-- 专注模式退出按钮 -->
+  <button class="focus-exit-btn glass-panel rounded-full p-3 text-moon-white/80 hover:text-moon-white" onclick="exitFocusMode()" title="退出专注模式">
+    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12"></path></svg>
+  </button>
+  
+  <!-- 主UI层 -->
+  <div id="uiLayer">
+    <!-- 情绪天气推荐 -->
+    <div id="moodRecommendation" class="ui-hideable glass-panel rounded-xl mx-4 mt-3 p-4 text-center text-moon-white/90 hidden">
+      <div id="moodTheme" class="text-sm mb-1"></div>
+      <div id="moodQuote" class="text-xs text-moon-white/60 italic"></div>
+    </div>
+    <!-- 情绪天气站 -->
+<div id="weatherStation" class="ui-hideable glass-panel rounded-xl mx-4 mt-3 p-4 text-center text-moon-white/90 hidden">
+  <div class="flex items-center justify-between mb-2">
+    <h3 class="text-sm font-serif">🌦️ 今日内心天气</h3>
+    <button id="editWeatherBtn" class="text-xs text-rain-blue hover:text-rain-blue/80">修改</button>
+  </div>
+  <div id="weatherDisplay" class="text-2xl mb-2"></div>
+  <div id="weatherQuote" class="text-xs text-moon-white/60 italic mb-2"></div>
+  <div id="weatherTheme" class="text-xs text-rain-blue/80"></div>
+</div>
+    <!-- 顶部栏 -->
+    <header class="ui-hideable flex items-center justify-between px-4 py-3 z-50">
+      <div class="flex items-center gap-2">
+        <button id="menuBtn" class="glass-panel rounded-xl p-2.5 text-moon-white/80 hover:text-moon-white transition-all">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+        </button>
+        <div class="glass-panel rounded-xl px-3 py-2 flex items-center gap-2">
+          <span id="currentDate" class="text-moon-white/70 font-mono text-xs"></span>
+          <span class="text-moon-white/30">|</span>
+          <span id="writingStreak" class="text-amber-gold text-xs font-mono">🔥 0 天</span>
+        </div>
+      </div>
+      
+      <div class="flex items-center gap-1">
+        <button class="mood-btn w-7 h-7 rounded-full flex items-center justify-center text-base" data-mood="calm" title="平静">🌙</button>
+        <button class="mood-btn w-7 h-7 rounded-full flex items-center justify-center text-base" data-mood="sad" title="低落">🌧️</button>
+        <button class="mood-btn w-7 h-7 rounded-full flex items-center justify-center text-base" data-mood="sweet" title="甜蜜">🌸</button>
+        <button class="mood-btn w-7 h-7 rounded-full flex items-center justify-center text-base" data-mood="inspired" title="灵感">✨</button>
+        <button class="mood-btn w-7 h-7 rounded-full flex items-center justify-center text-base" data-mood="tired" title="疲惫">🌫️</button>
+      </div>
+      
+      <div class="flex items-center gap-2">
+        <button id="handbookBtn" class="glass-panel rounded-xl p-2.5 text-moon-white/80 hover:text-moon-white transition-all" title="手账本">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+        </button>
+        <button id="pomodoroBtn" class="glass-panel rounded-xl p-2.5 text-moon-white/80 hover:text-moon-white transition-all" title="番茄钟">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        </button>
+        <button id="marketBtn" class="glass-panel rounded-xl p-2.5 text-moon-white/80 hover:text-moon-white transition-all" title="市场分析">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+        </button>
+      </div>
+    </header>
+    
+    <!-- 每日金句 -->
+    <div id="dailyQuote" class="ui-hideable absolute top-16 left-1/2 transform -translate-x-1/2 text-center z-40 pointer-events-none max-w-2xl px-4">
+      <p class="text-moon-white/70 font-serif text-sm italic"></p>
+    </div>
+    
+    <!-- 主内容区 -->
+    <main class="flex-1 flex overflow-hidden">
+      <!-- 左侧章节栏 -->
+      <aside id="chapterSidebar" class="ui-hideable w-56 glass-panel border-r border-white/10 flex flex-col">
+        <div class="p-3 border-b border-white/10">
+          <div class="flex items-center justify-between mb-2">
+            <h3 class="text-moon-white font-serif text-sm">章节</h3>
+            <button id="addChapterBtn" class="text-rain-blue hover:text-rain-blue/80 transition-colors">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4v16m8-8H4"></path></svg>
+            </button>
+          </div>
+          <div id="projectSelector" class="glass-input rounded-lg px-2 py-1.5 text-xs text-moon-white/80 cursor-pointer truncate hover:bg-white/5">选择项目...</div>
+        </div>
+        <div id="chapterList" class="flex-1 overflow-y-auto p-2 space-y-1"></div>
+        <div class="p-3 border-t border-white/10">
+          <div class="flex items-center justify-between text-xs text-moon-white/50 mb-1">
+            <span>今日目标</span>
+            <span id="dailyGoalText">0 / 1000</span>
+          </div>
+          <div class="h-1.5 bg-moon-white/10 rounded-full overflow-hidden">
+            <div id="dailyGoalBar" class="h-full bg-gradient-to-r from-rain-blue to-neon-pink rounded-full transition-all" style="width: 0%"></div>
+          </div>
+        </div>
+      </aside>
+      
+      <!-- 中央编辑区 -->
+      <div class="flex-1 flex flex-col items-center justify-center p-4">
+        <div id="editorContainer" class="w-full max-w-3xl h-[70vh] glass-panel rounded-2xl p-6 flex flex-col transition-all">
+          <div class="flex items-center justify-between mb-3 pb-3 border-b border-white/10">
+            <input id="chapterTitle" type="text" class="bg-transparent text-moon-white text-lg font-serif outline-none placeholder:text-moon-white/30 flex-1" placeholder="章节标题...">
+            <div class="flex items-center gap-3 text-xs text-moon-white/50 font-mono">
+              <span id="charCount">0 字</span>
+              <span id="writeTime">00:00</span>
+            </div>
+          </div>
+          <textarea id="mainEditor" class="editor-textarea flex-1" placeholder="雨声潺潺，像住在溪边...&#10;&#10;在这里，写下你的故事。"></textarea>
+        </div>
+      </div>
+      
+      <!-- 右侧工具栏 -->
+      <aside id="rightSidebar" class="ui-hideable w-14 glass-panel border-l border-white/10 flex flex-col items-center py-3 gap-3">
+        <button id="focusModeBtn" class="w-9 h-9 rounded-lg glass-panel flex items-center justify-center text-moon-white/70 hover:text-moon-white transition-all" title="专注模式 (Ctrl+F)">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+        </button>
+        <button id="inspirationBtn" class="w-9 h-9 rounded-lg glass-panel flex items-center justify-center text-moon-white/70 hover:text-moon-white transition-all" title="灵感便签">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg>
+        </button>
+        <button id="characterBtn" class="w-9 h-9 rounded-lg glass-panel flex items-center justify-center text-moon-white/70 hover:text-moon-white transition-all" title="角色设定">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+        </button>
+        <button id="promptBtn" class="w-9 h-9 rounded-lg glass-panel flex items-center justify-center text-moon-white/70 hover:text-moon-white transition-all" title="写作提示">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        </button>
+        <button id="exportBtn" class="w-9 h-9 rounded-lg glass-panel flex items-center justify-center text-moon-white/70 hover:text-moon-white transition-all" title="导出">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+        </button>
+        <div class="flex-1"></div>
+        <button id="saveBtn" class="w-9 h-9 rounded-lg bg-rain-blue/80 hover:bg-rain-blue flex items-center justify-center text-white transition-all" title="保存 (Ctrl+S)">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path></svg>
+        </button>
+      </aside>
+    </main>
+    
+    <!-- 底部工具栏 -->
+    <footer class="ui-hideable flex items-center justify-between px-4 py-2 z-50">
+      <div class="flex items-center gap-2">
+        <button id="atmosphereBtn" class="glass-panel rounded-lg px-3 py-2 flex items-center gap-2 text-moon-white/80 hover:text-moon-white transition-all text-xs">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
+          <span>氛围</span>
+        </button>
+        <button id="todoBtn" class="glass-panel rounded-lg px-3 py-2 flex items-center gap-2 text-moon-white/80 hover:text-moon-white transition-all text-xs">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
+          <span>待办</span>
+        </button>
+      </div>
+      
+      <div class="flex items-center gap-2">
+        <div id="musicPlayer" class="glass-panel rounded-full px-3 py-1.5 flex items-center gap-2">
+          <button id="playPause" class="w-7 h-7 rounded-full bg-rain-blue/80 hover:bg-rain-blue flex items-center justify-center text-white">
+            <svg id="playIcon" class="w-3 h-3 ml-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"></path></svg>
+            <svg id="pauseIcon" class="w-3 h-3 hidden" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"></path></svg>
+          </button>
+          <span id="trackName" class="text-xs text-moon-white/60 max-w-20 truncate">轻音乐</span>
+        </div>
+      </div>
+      
+      <div class="flex items-center gap-2">
+        <button id="darkroomBtn" class="glass-panel rounded-lg px-3 py-2 flex items-center gap-2 text-moon-white/80 hover:text-moon-white transition-all text-xs">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+          <span>小说暗房</span>
+        </button>
+      </div>
+    </footer>
+  </div>
+  
+  <!-- 遮罩层 -->
+  <div id="overlay" class="fixed inset-0 bg-black/60 z-[300] opacity-0 pointer-events-none transition-opacity"></div>
+  
+  <!-- 新建项目模态框 -->
+  <div id="newProjectModal" class="modal">
+    <div class="modal-content">
+      <h3 class="text-moon-white font-serif text-lg mb-4">新建项目</h3>
+      <input type="text" id="newProjectTitle" class="glass-input w-full rounded-lg px-3 py-2 mb-3 text-sm" placeholder="书名">
+      <input type="number" id="newProjectTarget" class="glass-input w-full rounded-lg px-3 py-2 mb-4 text-sm" placeholder="目标字数（默认50000）" value="50000">
+      <div class="flex gap-2">
+        <button onclick="closeModal('newProjectModal')" class="flex-1 glass-input rounded-lg py-2 text-sm text-moon-white/70 hover:text-moon-white">取消</button>
+        <button onclick="confirmNewProject()" class="flex-1 bg-rain-blue/80 hover:bg-rain-blue rounded-lg py-2 text-sm text-white">创建</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 添加角色模态框 -->
+  <div id="newCharacterModal" class="modal">
+    <div class="modal-content">
+      <h3 class="text-moon-white font-serif text-lg mb-4">添加角色</h3>
+      <input type="text" id="charName" class="glass-input w-full rounded-lg px-3 py-2 mb-2 text-sm" placeholder="姓名">
+      <input type="text" id="charRole" class="glass-input w-full rounded-lg px-3 py-2 mb-2 text-sm" placeholder="身份（主角/配角/反派...）">
+      <textarea id="charDesc" class="glass-input w-full rounded-lg px-3 py-2 mb-2 text-sm h-20 resize-none" placeholder="角色描述"></textarea>
+      <input type="text" id="charTags" class="glass-input w-full rounded-lg px-3 py-2 mb-4 text-sm" placeholder="标签（用空格分隔）">
+      <div class="flex gap-2">
+        <button onclick="closeModal('newCharacterModal')" class="flex-1 glass-input rounded-lg py-2 text-sm text-moon-white/70 hover:text-moon-white">取消</button>
+        <button onclick="confirmNewCharacter()" class="flex-1 bg-rain-blue/80 hover:bg-rain-blue rounded-lg py-2 text-sm text-white">添加</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 主菜单抽屉 -->
+  <div id="mainMenuPanel" class="drawer drawer-left fixed left-0 top-0 h-full w-72 glass-panel z-[400] overflow-y-auto">
+    <div class="p-5">
+      <div class="flex items-center justify-between mb-6">
+        <h2 class="text-moon-white font-xiaowei text-xl">雨窗文学馆</h2>
+        <button id="closeMainMenu" class="text-moon-white/60 hover:text-moon-white"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+      </div>
+      
+      <nav class="space-y-2">
+        <button class="menu-item w-full glass-input rounded-lg px-3 py-2.5 flex items-center gap-3 text-moon-white/80 hover:text-moon-white text-left text-sm" data-panel="diary">
+          <span>📓</span><span>心情日记</span>
+        </button>
+        <button class="menu-item w-full glass-input rounded-lg px-3 py-2.5 flex items-center gap-3 text-moon-white/80 hover:text-moon-white text-left text-sm" data-panel="quotes">
+          <span>✨</span><span>金句收藏</span>
+        </button>
+        <button class="menu-item w-full glass-input rounded-lg px-3 py-2.5 flex items-center gap-3 text-moon-white/80 hover:text-moon-white text-left text-sm" data-panel="backup">
+          <span>💾</span><span>备份导出</span>
+        </button>
+        <button class="menu-item w-full glass-input rounded-lg px-3 py-2.5 flex items-center gap-3 text-moon-white/80 hover:text-red-400 text-left text-sm" data-panel="logout">
+          <span>🚪</span><span>退出登录</span>
+        </button>
+      </nav>
+      
+      <div class="mt-6 p-4 glass-input rounded-xl">
+        <h4 class="text-moon-white/80 text-xs mb-3">今日写作数据</h4>
+        <div class="grid grid-cols-2 gap-3">
+          <div class="text-center">
+            <div id="menuTodayWords" class="text-xl font-mono text-rain-blue">0</div>
+            <div class="text-xs text-moon-white/50">字数</div>
+          </div>
+          <div class="text-center">
+            <div id="menuTodayTime" class="text-xl font-mono text-neon-pink">0</div>
+            <div class="text-xs text-moon-white/50">分钟</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 氛围控制台 -->
+  <div id="atmospherePanel" class="drawer drawer-left fixed left-0 top-0 h-full w-72 glass-panel z-[400] overflow-y-auto">
+    <div class="p-5">
+      <div class="flex items-center justify-between mb-5">
+        <h2 class="text-moon-white font-serif text-lg">氛围控制台</h2>
+        <button id="closeAtmosphere" class="text-moon-white/60 hover:text-moon-white"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+      </div>
+      
+      <div class="mb-5">
+        <label class="text-moon-white/60 text-xs mb-2 block">雨势强度</label>
+        <input type="range" id="rainIntensity" min="0" max="100" value="50" class="w-full accent-rain-blue">
+        <div class="flex justify-between text-xs text-moon-white/40 mt-1"><span>细雨</span><span>暴雨</span></div>
+      </div>
+      
+      <div class="mb-5">
+        <label class="text-moon-white/60 text-xs mb-2 block">背景音乐</label>
+        <div class="space-y-2">
+          <button class="music-btn w-full glass-input rounded-lg px-3 py-2 flex items-center justify-between text-moon-white/80 text-sm" data-music="piano">
+            <span class="flex items-center gap-2"><span>🎹</span><span>轻音乐</span></span>
+            <span class="music-indicator w-2 h-2 rounded-full bg-moon-white/30"></span>
+          </button>
+          <button class="music-btn w-full glass-input rounded-lg px-3 py-2 flex items-center justify-between text-moon-white/80 text-sm" data-music="rain">
+            <span class="flex items-center gap-2"><span>🌧️</span><span>雨声</span></span>
+            <span class="music-indicator w-2 h-2 rounded-full bg-moon-white/30"></span>
+          </button>
+          <button class="music-btn w-full glass-input rounded-lg px-3 py-2 flex items-center justify-between text-moon-white/80 text-sm" data-music="ocean">
+            <span class="flex items-center gap-2"><span>🌊</span><span>海浪</span></span>
+            <span class="music-indicator w-2 h-2 rounded-full bg-moon-white/30"></span>
+          </button>
+          <button class="music-btn w-full glass-input rounded-lg px-3 py-2 flex items-center justify-between text-moon-white/80 text-sm" data-music="whale">
+            <span class="flex items-center gap-2"><span>🐋</span><span>鲸歌</span></span>
+            <span class="music-indicator w-2 h-2 rounded-full bg-moon-white/30"></span>
+          </button>
+        </div>
+      </div>
+      
+      <div class="mb-5">
+        <label class="text-moon-white/60 text-xs mb-2 block">色温</label>
+        <input type="range" id="colorTemp" min="2700" max="6500" value="4500" class="w-full accent-rain-blue">
+        <div class="flex justify-between text-xs text-moon-white/40 mt-1"><span>暖黄</span><span>冷白</span></div>
+      </div>
+      
+      <div class="grid grid-cols-3 gap-2">
+  <button class="bg-btn aspect-video rounded-lg overflow-hidden border-2 border-transparent hover:border-rain-blue transition-all" data-bg="city-neon">
+    <img src="bg-city-neon.jpg" class="w-full h-full object-cover opacity-60 hover:opacity-100" alt="城市霓虹">
+  </button>
+  <button class="bg-btn aspect-video rounded-lg overflow-hidden border-2 border-transparent hover:border-rain-blue transition-all" data-bg="country-road">
+    <img src="bg-country-road.jpg" class="w-full h-full object-cover opacity-60 hover:opacity-100" alt="乡间小路">
+  </button>
+  <button class="bg-btn aspect-video rounded-lg overflow-hidden border-2 border-transparent hover:border-rain-blue transition-all" data-bg="misty-fog">
+    <img src="bg-misty-fog.jpg" class="w-full h-full object-cover opacity-60 hover:opacity-100" alt="迷雾山林">
+  </button>
+  <button class="bg-btn aspect-video rounded-lg overflow-hidden border-2 border-transparent hover:border-rain-blue transition-all" data-bg="sakura-sweet">
+    <img src="bg-sakura-sweet.jpg" class="w-full h-full object-cover opacity-60 hover:opacity-100" alt="樱花甜蜜">
+  </button>
+  <button class="bg-btn aspect-video rounded-lg overflow-hidden border-2 border-transparent hover:border-rain-blue transition-all" data-bg="scifi-tunnel">
+    <img src="bg-scifi-tunnel.jpg" class="w-full h-full object-cover opacity-60 hover:opacity-100" alt="科幻隧道">
+  </button>
+  <button class="bg-btn aspect-video rounded-lg overflow-hidden border-2 border-transparent hover:border-rain-blue transition-all" data-bg="forest">
+    <img src="bg-forest.jpg" class="w-full h-full object-cover opacity-60 hover:opacity-100" alt="森林深处">
+  </button>
+  <button class="bg-btn aspect-video rounded-lg overflow-hidden border-2 border-transparent hover:border-rain-blue transition-all" data-bg="ocean">
+    <img src="bg-ocean.jpg" class="w-full h-full object-cover opacity-60 hover:opacity-100" alt="海洋">
+  </button>
+  <button class="bg-btn aspect-video rounded-lg overflow-hidden border-2 border-transparent hover:border-rain-blue transition-all" data-bg="library">
+    <img src="bg-library.jpg" class="w-full h-full object-cover opacity-60 hover:opacity-100" alt="复古图书馆">
+  </button>
+  <button class="bg-btn aspect-video rounded-lg overflow-hidden border-2 border-transparent hover:border-rain-blue transition-all" data-bg="none">
+    <div class="w-full h-full bg-gradient-to-br from-deep-night to-rain-blue flex items-center justify-center">
+      <span class="text-xs text-moon-white/60">无背景</span>
+    </div>
+  </button>
+</div>
+
+<!-- 增加一个导入背景的按钮 -->
+<div class="mt-3">
+  <input type="file" id="customBgInput" accept="image/*" class="hidden">
+  <button id="uploadBgBtn" class="w-full glass-input rounded-lg px-3 py-2 text-moon-white/80 hover:text-moon-white text-sm flex items-center justify-center gap-2">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+    <span>上传自定义背景图片</span>
+  </button>
+</div>
+    </div>
+  </div>
+  
+  <!-- 手账本面板 -->
+  <div id="handbookPanel" class="drawer drawer-right fixed right-0 top-0 h-full w-full glass-panel z-[400] overflow-hidden">
+    <div class="h-full flex flex-col">
+      <div class="flex items-center justify-between px-5 py-3 border-b border-white/10">
+        <h2 class="text-moon-white font-serif text-lg">手账本</h2>
+        <div class="flex items-center gap-2">
+          <select id="paperType" class="glass-input rounded-lg px-3 py-1.5 text-sm text-moon-white/80 cursor-pointer">
+            <option value="1">复古蕾丝</option>
+            <option value="2">典雅纹理</option>
+            <option value="3">艺术水彩</option>
+            <option value="4">手写格纹</option>
+            <option value="5">简约质感</option>
+          </select>
+          <button id="importBackgroundBtn" class="glass-panel rounded-lg px-3 py-1.5 text-sm text-moon-white/80 hover:text-moon-white" title="导入背景图片">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"></path></svg>
+          </button>
+          <input type="file" id="backgroundInput" accept="image/*" class="hidden">
+          <button id="newHandbookPage" class="glass-panel rounded-lg px-3 py-1.5 text-sm text-moon-white/80 hover:text-moon-white">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4v16m8-8H4"></path></svg>
+          </button>
+          <button id="closeHandbook" class="text-moon-white/60 hover:text-moon-white"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+        </div>
+      </div>
+      
+      <div class="flex-1 flex overflow-hidden">
+        <!-- 手账本列表 -->
+        <div class="w-48 glass-panel border-r border-white/10 overflow-y-auto p-3">
+          <div id="handbookList" class="space-y-2"></div>
+        </div>
+        
+        <!-- 编辑区 -->
+        <div class="flex-1 flex flex-col p-4 overflow-hidden">
+          <div id="handbookPaper" class="flex-1 rounded-lg shadow-2xl overflow-hidden relative transition-all" style="background-image: url('1.jpg'); background-size: cover; background-position: center;">
+            <canvas id="handbookCanvas" class="absolute inset-0 cursor-crosshair"></canvas>
+            <textarea id="handbookText" class="absolute inset-0 bg-transparent resize-none outline-none p-6 text-gray-800 font-serif text-base" placeholder="在这里写下你的手账..."></textarea>
+          </div>
+          
+          <!-- 工具栏 -->
+          <div class="flex items-center justify-center gap-2 mt-3">
+            <button id="hbToolPen" class="tool-btn glass-panel rounded-lg p-2 active btn-active" title="画笔">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+            </button>
+            <button id="hbToolText" class="tool-btn glass-panel rounded-lg p-2" title="文字">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+            </button>
+            <input type="color" id="hbColor" value="#333333" class="w-8 h-8 rounded-lg cursor-pointer border-0">
+            <input type="range" id="hbSize" min="1" max="20" value="3" class="w-20 accent-rain-blue">
+            <button id="hbClear" class="glass-panel rounded-lg p-2 text-red-400 hover:text-red-300" title="清空">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+            </button>
+            <button id="hbToolImage" class="tool-btn glass-panel rounded-lg p-2" title="插入图片">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+            </button>
+            <input type="file" id="hbImageInput" accept="image/*" class="hidden">
+            <button id="hbToolSticker" class="tool-btn glass-panel rounded-lg p-2" title="贴纸">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            </button>
+            <button id="hbSave" class="glass-panel rounded-lg p-2 text-rain-blue hover:text-rain-blue/80" title="保存">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 番茄钟面板 -->
+  <div id="pomodoroPanel" class="drawer drawer-right fixed right-0 top-0 h-full w-full glass-panel z-[400] overflow-hidden">
+    <div class="h-full flex flex-col">
+      <div class="flex items-center justify-between px-5 py-3 border-b border-white/10">
+        <h2 class="text-moon-white font-serif text-lg">番茄钟</h2>
+        <button id="closePomodoro" class="text-moon-white/60 hover:text-moon-white"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+      </div>
+      
+      <div class="flex-1 flex overflow-hidden">
+        <!-- 左侧任务列表 -->
+        <div class="w-64 glass-panel border-r border-white/10 flex flex-col">
+          <div class="p-3 border-b border-white/10">
+            <div class="flex gap-2">
+              <input id="newTaskInput" type="text" class="flex-1 glass-input rounded-lg px-3 py-2 text-sm text-moon-white/90 placeholder:text-moon-white/30" placeholder="新任务...">
+              <button id="addTaskBtn" class="bg-yanzhi hover:bg-yanzhi/80 text-white rounded-lg px-3 transition-colors">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+              </button>
+            </div>
+          </div>
+          <div id="taskList" class="flex-1 overflow-y-auto p-2 space-y-1"></div>
+        </div>
+        
+        <!-- 右侧计时器和统计 -->
+        <div class="flex-1 flex flex-col p-6 overflow-y-auto">
+          <!-- 计时器 -->
+          <div class="text-center mb-8">
+            <div id="pomodoroTimer" class="pomodoro-timer mb-4">25:00</div>
+            <div id="currentTaskName" class="text-moon-white/60 text-sm mb-4">选择一个任务开始</div>
+            <div class="flex justify-center gap-3">
+              <button id="pomoStart" class="pomodoro-btn w-14 h-14 rounded-full bg-yanzhi hover:bg-yanzhi/80 flex items-center justify-center text-white transition-colors">
+                <svg class="w-6 h-6 ml-1" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"></path></svg>
+              </button>
+              <button id="pomoPause" class="pomodoro-btn w-14 h-14 rounded-full bg-tenghuang hover:bg-tenghuang/80 flex items-center justify-center text-white hidden transition-colors">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"></path></svg>
+              </button>
+              <button id="pomoStop" class="pomodoro-btn w-14 h-14 rounded-full bg-zheshi hover:bg-zheshi/80 flex items-center justify-center text-white transition-colors">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M6 6h12v12H6z"></path></svg>
+              </button>
+            </div>
+            <div class="flex justify-center gap-2 mt-4">
+              <button class="pomo-mode px-3 py-1 rounded-full text-xs bg-yanzhi/30 text-white border border-yanzhi" data-time="25">25分钟</button>
+              <button class="pomo-mode px-3 py-1 rounded-full text-xs text-moon-white/60 hover:text-moon-white" data-time="45">45分钟</button>
+              <button class="pomo-mode px-3 py-1 rounded-full text-xs text-moon-white/60 hover:text-moon-white" data-time="60">60分钟</button>
+            </div>
+          </div>
+          
+          <!-- 今日统计 -->
+          <div class="glass-input rounded-xl p-4 mb-4">
+            <h4 class="text-moon-white/80 text-sm mb-3">今日专注分布</h4>
+            <div class="flex items-center justify-center">
+              <canvas id="todayPomoChart" width="200" height="200"></canvas>
+            </div>
+            <div id="todayPomoTotal" class="text-center mt-2 text-moon-white/60 text-sm"></div>
+          </div>
+          
+          <!-- 周统计 -->
+          <div class="glass-input rounded-xl p-4">
+            <h4 class="text-moon-white/80 text-sm mb-3">本周专注时长</h4>
+            <canvas id="weekPomoChart" height="120"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 市场分析面板 -->
+  <div id="marketPanel" class="drawer drawer-right fixed right-0 top-0 h-full w-full glass-panel z-[400] overflow-hidden">
+    <div class="h-full flex flex-col">
+      <div class="flex items-center justify-between px-5 py-3 border-b border-white/10">
+        <h2 class="text-moon-white font-serif text-lg">市场分析</h2>
+        <button id="closeMarket" class="text-moon-white/60 hover:text-moon-white"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+      </div>
+      
+      <div class="flex-1 overflow-y-auto p-5">
+        <div class="mb-4">
+          <div class="flex gap-2 mb-3">
+            <select id="marketPlatform" class="glass-input rounded-lg px-3 py-2 text-sm text-moon-white/80 cursor-pointer">
+              <option value="fanqie">番茄小说</option>
+              <option value="qidian">起点中文网</option>
+              <option value="jinjiang">晋江文学</option>
+              <option value="qimao">七猫小说</option>
+            </select>
+            <select id="marketCategory" class="glass-input rounded-lg px-3 py-2 text-sm text-moon-white/80 cursor-pointer">
+              <option value="hot">热门榜</option>
+              <option value="new">新书榜</option>
+              <option value="debut">首秀榜</option>
+            </select>
+          </div>
+          <textarea id="marketDataInput" class="w-full h-32 glass-input rounded-lg p-3 text-sm text-moon-white/90 placeholder:text-moon-white/30 resize-none" placeholder="由于平台限制，请手动复制粘贴榜单数据到这里...
+格式示例：
+1. 《书名》作者 分类 字数 在读
+
+或者粘贴小说简介文本进行分析"></textarea>
+          <div class="flex gap-2 mt-2">
+            <button id="analyzeMarketBtn" class="flex-1 bg-gradient-to-r from-rain-blue to-neon-pink rounded-lg px-4 py-2 text-white text-sm hover:opacity-90 transition-opacity">🔍 榜单分析</button>
+            <button id="analyzeSummaryBtn" class="flex-1 bg-gradient-to-r from-amber-gold to-rain-blue rounded-lg px-4 py-2 text-white text-sm hover:opacity-90 transition-opacity">📝 简介分析</button>
+          </div>
+        </div>
+        
+        <div id="marketAnalysisResult" class="space-y-4 hidden">
+          <div class="glass-input rounded-xl p-4">
+            <h4 class="text-moon-white/80 text-sm mb-2">📊 热门题材</h4>
+            <div id="hotGenres" class="flex flex-wrap gap-2"></div>
+          </div>
+          <div class="glass-input rounded-xl p-4">
+            <h4 class="text-moon-white/80 text-sm mb-2">🏷️ 爆款标签</h4>
+            <div id="hotTags" class="flex flex-wrap gap-2"></div>
+          </div>
+          <div class="glass-input rounded-xl p-4">
+            <h4 class="text-moon-white/80 text-sm mb-2">📖 书名公式</h4>
+            <ul id="titleFormulas" class="text-sm text-moon-white/70 space-y-1"></ul>
+          </div>
+          <div class="glass-input rounded-xl p-4">
+            <h4 class="text-moon-white/80 text-sm mb-2">💡 写作建议</h4>
+            <p id="writingAdvice" class="text-sm text-moon-white/70 leading-relaxed"></p>
+          </div>
+          <div id="summaryAnalysisResult" class="glass-input rounded-xl p-4 hidden">
+            <h4 class="text-moon-white/80 text-sm mb-2">📝 简介分析结果</h4>
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <h5 class="text-moon-white/70 text-xs mb-2">🔑 关键词提取</h5>
+                <div id="summaryKeywords" class="flex flex-wrap gap-1"></div>
+              </div>
+              <div>
+                <h5 class="text-moon-white/70 text-xs mb-2">📚 题材分析</h5>
+                <div id="summaryGenres" class="flex flex-wrap gap-1"></div>
+              </div>
+              <div class="col-span-2">
+                <h5 class="text-moon-white/70 text-xs mb-2">💫 情绪倾向</h5>
+                <div id="sentimentMeter" class="h-3 bg-gray-600 rounded-full overflow-hidden mb-2">
+                  <div class="h-full bg-gradient-to-r from-red-400 to-green-400 transition-all" style="width: 50%"></div>
+                </div>
+                <div class="flex justify-between text-xs text-moon-white/50">
+                  <span>悲观</span>
+                  <span>中性</span>
+                  <span>乐观</span>
+                </div>
+                <p id="sentimentScore" class="text-xs text-moon-white/60 mt-1 text-center"></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 灵感便签面板 -->
+  <div id="inspirationPanel" class="drawer drawer-right fixed right-0 top-0 h-full w-80 glass-panel z-[400] overflow-y-auto">
+    <div class="p-5">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-moon-white font-serif text-lg">灵感便签</h2>
+        <button id="closeInspiration" class="text-moon-white/60 hover:text-moon-white"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+      </div>
+      <textarea id="newNoteContent" class="glass-input w-full h-20 rounded-lg p-3 text-sm text-moon-white/90 placeholder:text-moon-white/30 resize-none mb-2" placeholder="捕捉灵感..."></textarea>
+      <div class="flex gap-2 mb-4">
+        <button class="tag-btn px-2 py-1 rounded-full text-xs bg-rain-blue/20 text-rain-blue border border-rain-blue/30 cursor-pointer" data-tag="小说梗">#小说梗</button>
+        <button class="tag-btn px-2 py-1 rounded-full text-xs bg-neon-pink/20 text-neon-pink border border-neon-pink/30 cursor-pointer" data-tag="CP设定">#CP设定</button>
+        <button class="tag-btn px-2 py-1 rounded-full text-xs bg-amber-gold/20 text-amber-gold border border-amber-gold/30 cursor-pointer" data-tag="对话">#对话</button>
+      </div>
+      <button id="addNoteBtn" class="w-full bg-rain-blue/80 hover:bg-rain-blue text-white rounded-lg py-2 text-sm mb-4 transition-colors">添加</button>
+      <div id="notesList" class="space-y-3"></div>
+    </div>
+  </div>
+  
+  <!-- 小说暗房面板 -->
+  <div id="darkroomPanel" class="drawer drawer-bottom fixed left-0 bottom-0 w-full h-[60vh] glass-panel z-[400]">
+    <div class="h-full flex flex-col">
+      <div class="flex items-center justify-between px-5 py-3 border-b border-white/10">
+        <h2 class="text-moon-white font-serif text-lg">小说暗房</h2>
+        <div class="flex gap-2">
+          <button id="newProjectBtn" class="glass-panel rounded-lg px-3 py-1.5 text-sm text-moon-white/80 hover:text-moon-white transition-colors">新建项目</button>
+          <button id="closeDarkroom" class="text-moon-white/60 hover:text-moon-white"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 9l-7 7-7-7"></path></svg></button>
+        </div>
+      </div>
+      <div id="projectsList" class="flex-1 overflow-x-auto p-4">
+        <div class="flex gap-4 h-full"></div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 角色设定面板 -->
+  <div id="characterPanel" class="drawer drawer-right fixed right-0 top-0 h-full w-80 glass-panel z-[400] overflow-y-auto">
+    <div class="p-5">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-moon-white font-serif text-lg">角色设定</h2>
+        <button id="closeCharacter" class="text-moon-white/60 hover:text-moon-white"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+      </div>
+      <button id="addCharacterBtn" class="w-full glass-input rounded-lg px-3 py-2 text-sm text-moon-white/80 hover:text-moon-white mb-4 transition-colors">+ 添加角色</button>
+      <div id="characterList" class="space-y-3"></div>
+    </div>
+  </div>
+  
+  <!-- 写作提示面板 -->
+  <div id="promptPanel" class="drawer drawer-right fixed right-0 top-0 h-full w-80 glass-panel z-[400] overflow-y-auto">
+    <div class="p-5">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-moon-white font-serif text-lg">写作提示</h2>
+        <button id="closePrompt" class="text-moon-white/60 hover:text-moon-white"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+      </div>
+      <div class="flex gap-1 mb-3">
+        <button class="prompt-tab px-2 py-1 rounded-full text-xs bg-rain-blue/20 text-rain-blue border border-rain-blue/30 cursor-pointer" data-type="plot">剧情</button>
+        <button class="prompt-tab px-2 py-1 rounded-full text-xs text-moon-white/60 hover:text-moon-white cursor-pointer" data-type="character">角色</button>
+        <button class="prompt-tab px-2 py-1 rounded-full text-xs text-moon-white/60 hover:text-moon-white cursor-pointer" data-type="scene">场景</button>
+        <button class="prompt-tab px-2 py-1 rounded-full text-xs text-moon-white/60 hover:text-moon-white cursor-pointer" data-type="dialog">对话</button>
+      </div>
+      <button id="generatePrompt" class="w-full bg-gradient-to-r from-rain-blue to-neon-pink rounded-lg px-3 py-2 text-white text-sm mb-3 hover:opacity-90 transition-opacity">🎲 生成提示</button>
+      <div id="promptContent" class="glass-input rounded-xl p-4 text-moon-white/90 text-sm leading-relaxed min-h-[150px]"></div>
+    </div>
+  </div>
+  
+  <!-- 导出面板 -->
+  <div id="exportPanel" class="drawer drawer-right fixed right-0 top-0 h-full w-72 glass-panel z-[400] overflow-y-auto">
+    <div class="p-5">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-moon-white font-serif text-lg">导出作品</h2>
+        <button id="closeExport" class="text-moon-white/60 hover:text-moon-white"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+      </div>
+      <div class="space-y-2">
+        <button class="export-btn w-full glass-input rounded-lg px-3 py-2 flex items-center gap-3 text-moon-white/80 text-sm hover:text-moon-white transition-colors" data-format="txt"><span>📄</span><span>导出为 TXT</span></button>
+        <button class="export-btn w-full glass-input rounded-lg px-3 py-2 flex items-center gap-3 text-moon-white/80 text-sm hover:text-moon-white transition-colors" data-format="md"><span>📝</span><span>导出为 Markdown</span></button>
+        <button class="export-btn w-full glass-input rounded-lg px-3 py-2 flex items-center gap-3 text-moon-white/80 text-sm hover:text-moon-white transition-colors" data-format="json"><span>💾</span><span>备份所有数据</span></button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 待办面板 -->
+  <div id="todoPanel" class="drawer drawer-left fixed left-0 top-0 h-full w-72 glass-panel z-[400] overflow-y-auto">
+    <div class="p-5">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-moon-white font-serif text-lg">待办清单</h2>
+        <button id="closeTodo" class="text-moon-white/60 hover:text-moon-white"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+      </div>
+      <div class="flex gap-2 mb-4">
+        <input id="newTodoInput" type="text" class="flex-1 glass-input rounded-lg px-3 py-2 text-sm text-moon-white/90 placeholder:text-moon-white/30" placeholder="添加待办...">
+        <button id="addTodoBtn" class="bg-rain-blue/80 hover:bg-rain-blue text-white rounded-lg px-3 transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg></button>
+      </div>
+      <div id="todoList" class="space-y-2"></div>
+    </div>
+  </div>
+  
+  <!-- 心情日记面板 -->
+  <div id="diaryPanel" class="drawer drawer-right fixed right-0 top-0 h-full w-96 glass-panel z-[400] overflow-y-auto">
+    <div class="p-5">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-moon-white font-serif text-lg">心情日记</h2>
+        <button id="closeDiary" class="text-moon-white/60 hover:text-moon-white"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+      </div>
+      <div class="glass-input rounded-xl p-3 mb-4">
+        <div class="flex justify-center gap-3 mb-2">
+          <button class="diary-mood text-2xl cursor-pointer transition-transform hover:scale-110" data-mood="1">😢</button>
+          <button class="diary-mood text-2xl cursor-pointer transition-transform hover:scale-110" data-mood="2">😔</button>
+          <button class="diary-mood text-2xl cursor-pointer transition-transform hover:scale-110" data-mood="3">😐</button>
+          <button class="diary-mood text-2xl cursor-pointer transition-transform hover:scale-110" data-mood="4">🙂</button>
+          <button class="diary-mood text-2xl cursor-pointer transition-transform hover:scale-110" data-mood="5">😄</button>
+        </div>
+        <textarea id="diaryContent" class="w-full h-20 bg-transparent text-moon-white/90 text-sm resize-none outline-none placeholder:text-moon-white/30" placeholder="写下今天的心情..."></textarea>
+        <button id="saveDiaryBtn" class="w-full mt-2 bg-rain-blue/80 hover:bg-rain-blue text-white rounded-lg py-1.5 text-sm transition-colors">保存</button>
+      </div>
+      <div id="diaryList" class="space-y-3"></div>
+    </div>
+  </div>
+  
+  <!-- 金句收藏面板 -->
+  <div id="quotesPanel" class="drawer drawer-right fixed right-0 top-0 h-full w-96 glass-panel z-[400] overflow-y-auto">
+    <div class="p-5">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-moon-white font-serif text-lg">金句收藏</h2>
+        <button id="closeQuotes" class="text-moon-white/60 hover:text-moon-white"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+      </div>
+      <div class="flex gap-2 mb-4">
+        <input id="newQuoteInput" type="text" class="flex-1 glass-input rounded-lg px-3 py-2 text-sm text-moon-white/90 placeholder:text-moon-white/30" placeholder="金句...">
+        <input id="newQuoteAuthor" type="text" class="w-20 glass-input rounded-lg px-3 py-2 text-sm text-moon-white/90 placeholder:text-moon-white/30" placeholder="作者">
+        <button id="addQuoteBtn" class="bg-rain-blue/80 hover:bg-rain-blue text-white rounded-lg px-3 transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg></button>
+      </div>
+      <div id="quotesList" class="space-y-3"></div>
+    </div>
+  </div>
+  
+  <!-- 备份面板 -->
+  <div id="backupPanel" class="drawer drawer-right fixed right-0 top-0 h-full w-80 glass-panel z-[400] overflow-y-auto">
+    <div class="p-5">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-moon-white font-serif text-lg">备份与恢复</h2>
+        <button id="closeBackup" class="text-moon-white/60 hover:text-moon-white"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+      </div>
+      <div class="space-y-4">
+        <div class="glass-input rounded-xl p-4">
+          <h4 class="text-moon-white/80 text-sm mb-2">导出备份</h4>
+          <p class="text-xs text-moon-white/50 mb-3">将所有数据导出为JSON文件，可在其他设备导入</p>
+          <button id="exportBackupBtn" class="w-full bg-rain-blue/80 hover:bg-rain-blue text-white rounded-lg py-2 text-sm transition-colors">📥 导出备份</button>
+        </div>
+        <div class="glass-input rounded-xl p-4">
+          <h4 class="text-moon-white/80 text-sm mb-2">导入备份</h4>
+          <p class="text-xs text-moon-white/50 mb-3">从JSON文件恢复数据</p>
+          <input type="file" id="importBackupInput" accept=".json" class="hidden">
+          <button onclick="document.getElementById('importBackupInput').click()" class="w-full bg-neon-pink/80 hover:bg-neon-pink text-white rounded-lg py-2 text-sm transition-colors">📤 导入备份</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    // ==================== 全局状态 ====================
+    let splashMusicGlobal = null;
+    const AppState = {
+      currentUser: null,
+      currentMood: 'calm',
+      rainIntensity: 50,
+      colorTemp: 4500,
+      isFocusMode: false,
+      isPlaying: false,
+      wordCount: 0,
+      writeStartTime: null,
+      todayWords: 0,
+      dailyGoal: 1000,
+      moodHistory: [],        // 存储每天的心情记录 { date: '2025-03-21', mood: 'sunny' }
+todayMood: null,        // 当天最终心情
+      // 多账号数据存储
+      accounts: {},
+      
+      // 当前账号数据
+      projects: [],
+      notes: [],
+      characters: [],
+      todos: [],
+      diaries: [],
+      quotes: [],
+      stats: { daily: {}, totalWords: 0, totalTime: 0 },
+      achievements: [],
+      handbook: [],
+      pomodoro: { tasks: [], records: {} },
+      
+      currentProject: null,
+      currentChapter: null,
+      currentHandbookPage: null,
+      
+      dailyQuotes: [
+        "雨声潺潺，像住在溪边。——张爱玲",
+        "生活就像一盒巧克力，你永远不知道下一颗是什么味道。——《阿甘正传》",
+        "曾经有一份真诚的爱情放在我面前……——《大话西游》",
+        "世界上只有一种真正的英雄主义，那就是认清生活的真相后依然热爱生活。——罗曼·罗兰",
+        "你若安好，便是晴天。——林徽因",
+        "我行过许多地方的桥，看过许多次数的云，喝过许多种类的酒，却只爱过一个正当最好年龄的人。——沈从文",
+        "黑夜给了我黑色的眼睛，我却用它寻找光明。——顾城",
+        "人生如逆旅，我亦是行人。——苏轼"
+      ],
+      
+      writingPrompts: {
+        plot: ["主角在雨夜收到了一封来自十年前的信...", "一个陌生人突然对主角说：'你长得像我死去的恋人'...", "主角发现自己每天醒来都会回到同一天...", "主角的宠物突然开口说话了...", "主角在旧书店里发现了一本写着自己名字的书..."],
+        character: ["描写一个表面冷漠但内心温柔的角色", "创造一个有着奇怪习惯的主角", "描写一个总是带着伞的人", "设计一个有着双重身份的角色", "描写一个害怕雨声的人"],
+        scene: ["描写一个雨夜的便利店", "描写一列永远行驶的夜车", "描写一个充满回忆的老房子", "描写城市凌晨四点的街道", "描写一个被遗忘的花园"],
+        dialog: ["写一段关于分手的对话，但双方都不说'分手'两个字", "写一段陌生人之间的温暖对话", "写一段关于记忆的对话", "写一段在雨中的告白", "写一段久别重逢的对话"]
+      }
+    };
+const moodData = {
+  sunny: {
+    emoji: '☀️',
+    name: '晴天',
+    quotes: [
+      '“当你年轻时，以为什么都有答案，可是老了的时候，你可能又觉得其实人生并没有所谓的答案。”——村上春树',
+      '“生活就像一盒巧克力，你永远不知道下一颗是什么味道。”——《阿甘正传》',
+      '“今天天气这么好，不如我们出去走走？”——佚名'
+    ],
+    theme: '适合写温馨、治愈的故事，或者描写一个充满希望的开始。'
+  },
+  cloudy: {
+    emoji: '⛅',
+    name: '多云',
+    quotes: [
+      '“沉默是金。”——张爱玲',
+      '“人生就像天气，有时晴有时阴。”——佚名',
+      '“云朵遮住了太阳，但阳光仍在云后。”——佚名'
+    ],
+    theme: '适合写一些哲理性的思考，或者描写日常中的微妙变化。'
+  },
+  'light-rain': {
+    emoji: '🌦️',
+    name: '小雨',
+    quotes: [
+      '“雨声潺潺，像住在溪边。”——张爱玲',
+      '“下雨天适合回忆。”——村上春树',
+      '“雨滴打在窗上，像是谁在轻轻敲门。”——佚名'
+    ],
+    theme: '适合写回忆、怀旧，或者浪漫的雨中邂逅。'
+  },
+  'heavy-rain': {
+    emoji: '⛈️',
+    name: '暴雨',
+    quotes: [
+      '“暴雨过后，世界会变得干净。”——村上春树',
+      '“雷声是天空的怒吼，雨是它的眼泪。”——佚名',
+      '“暴雨中的孤独，更显得深刻。”——佚名'
+    ],
+    theme: '适合写冲突、紧张的情节，或者描写人物的内心风暴。'
+  },
+  fog: {
+    emoji: '🌫️',
+    name: '雾',
+    quotes: [
+      '“雾里看花，水中望月。”——张爱玲',
+      '“迷雾中，看不清方向，却听得见心跳。”——村上春树',
+      '“雾天适合写悬疑，一切都藏在朦胧之中。”——佚名'
+    ],
+    theme: '适合写悬疑、推理，或者探索未知的故事。'
+  },
+  snow: {
+    emoji: '❄️',
+    name: '雪',
+    quotes: [
+      '“雪融化后会变成春天。”——安徒生',
+      '“雪花是冬天的信使，带来宁静。”——村上春树',
+      '“雪地里写下的字，总会消失，但记忆不会。”——佚名'
+    ],
+    theme: '适合写纯净、宁静的故事，或者描写孤独与希望。'
+  },
+  rainbow: {
+    emoji: '🌈',
+    name: '彩虹',
+    quotes: [
+      '“风雨过后，总会有彩虹。”——张爱玲',
+      '“彩虹是天空的微笑。”——村上春树',
+      '“希望就像彩虹，短暂却美丽。”——佚名'
+    ],
+    theme: '适合写励志、治愈，或者描写美好的结局。'
+  }
+};
+    // ==================== Service Worker ====================
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('data:text/javascript;base64,' + btoa(`
+        self.addEventListener('install', e => {
+          e.waitUntil(self.skipWaiting());
+        });
+        self.addEventListener('activate', e => {
+          e.waitUntil(self.clients.claim());
+        });
+        self.addEventListener('fetch', e => {
+          e.respondWith(fetch(e.request).catch(() => new Response('Offline')));
+        });
+      `)).catch(() => console.log('SW registration skipped'));
+    }
+
+    // ==================== 音频系统 ====================
+    class MusicSystem {
+      constructor() {
+        this.synth = null;
+        this.noise = null;
+        this.loop = null;
+        this.currentMusic = null;
+        this.isInitialized = false;
+      }
+      
+      async init() {
+        if (this.isInitialized) return;
+        await Tone.start();
+        
+        // 舒缓的钢琴合成器
+        this.synth = new Tone.PolySynth(Tone.Synth, {
+          oscillator: { type: 'sine' },
+          envelope: { attack: 0.5, decay: 0.3, sustain: 0.4, release: 2 }
+        }).toDestination();
+        this.synth.volume.value = -15;
+        
+        // 雨声
+        this.rainNoise = new Tone.NoiseSynth({
+          noise: { type: 'pink' },
+          envelope: { attack: 1, decay: 0.1, sustain: 1, release: 2 }
+        }).toDestination();
+        this.rainNoise.volume.value = -25;
+        
+        // 海浪声
+        this.oceanNoise = new Tone.NoiseSynth({
+          noise: { type: 'brown' },
+          envelope: { attack: 2, decay: 1, sustain: 1, release: 3 }
+        }).toDestination();
+        this.oceanNoise.volume.value = -20;
+        
+        // 鲸歌合成器
+        this.whaleSynth = new Tone.AMSynth({
+          harmonicity: 0.5,
+          oscillator: { type: 'sine' },
+          envelope: { attack: 1, decay: 2, sustain: 1, release: 4 },
+          modulation: { type: 'sine' },
+          modulationEnvelope: { attack: 0.5, decay: 0, sustain: 1, release: 0.5 }
+        }).toDestination();
+        this.whaleSynth.volume.value = -10;
+        
+        this.isInitialized = true;
+      }
+      
+      async play(type) {
+        await this.init();
+        this.stop();
+        this.currentMusic = type;
+        
+        if (type === 'piano') {
+          const notes = ['C4', 'E4', 'G4', 'B4', 'C5', 'B4', 'G4', 'E4'];
+          let index = 0;
+          this.loop = new Tone.Loop(time => {
+            this.synth.triggerAttackRelease(notes[index], '2n', time);
+            index = (index + 1) % notes.length;
+          }, '1n').start(0);
+          Tone.Transport.bpm.value = 60;
+          Tone.Transport.start();
+        } else if (type === 'rain') {
+          this.rainNoise.triggerAttack();
+        } else if (type === 'ocean') {
+          this.oceanNoise.triggerAttack();
+        } else if (type === 'whale') {
+          const whaleNotes = ['C3', 'G2', 'C3', 'E3'];
+          let index = 0;
+          this.loop = new Tone.Loop(time => {
+            this.whaleSynth.triggerAttackRelease(whaleNotes[index], '4n', time);
+            index = (index + 1) % whaleNotes.length;
+          }, '2n').start(0);
+          Tone.Transport.start();
+        }
+      }
+      
+      stop() {
+        if (this.synth) this.synth.releaseAll();
+        if (this.rainNoise) this.rainNoise.triggerRelease();
+        if (this.oceanNoise) this.oceanNoise.triggerRelease();
+        if (this.whaleSynth) this.whaleSynth.triggerRelease();
+        if (this.loop) {
+          this.loop.stop();
+          this.loop.dispose();
+          this.loop = null;
+        }
+        Tone.Transport.stop();
+        this.currentMusic = null;
+      }
+    }
+
+    const musicSystem = new MusicSystem();
+
+    // ==================== 雨滴系统 ====================
+    class RainSystem {
+      constructor(canvas) {
+        this.canvas = canvas;
+        this.ctx = canvas.getContext('2d');
+        this.drops = [];
+        this.width = window.innerWidth;
+        this.height = window.innerHeight;
+        this.canvas.width = this.width;
+        this.canvas.height = this.height;
+        
+        // 鼠标推开效果相关
+        this.mouseX = -1000;
+        this.mouseY = -1000;
+        this.pushRadius = 80; // 推开半径
+        this.pushStrength = 15; // 推开力度
+        this.isMouseMoving = false;
+        this.mouseTimeout = null;
+        
+        // 哈气写字效果相关
+        this.breathCanvas = document.createElement('canvas');
+        this.breathCtx = this.breathCanvas.getContext('2d');
+        this.breathCanvas.width = this.width;
+        this.breathCanvas.height = this.height;
+        this.breathOpacity = 0;
+        this.isBreathing = false;
+        this.breathFading = false;
+        this.lastBreathTime = 0;
+        
+        this.init();
+        this.setupEventListeners();
+        this.animate();
+        
+        window.addEventListener('resize', () => {
+          this.width = window.innerWidth;
+          this.height = window.innerHeight;
+          this.canvas.width = this.width;
+          this.canvas.height = this.height;
+          this.breathCanvas.width = this.width;
+          this.breathCanvas.height = this.height;
+        });
+      }
+      
+      init() {
+        for (let i = 0; i < 300; i++) {
+          this.drops.push({
+            x: Math.random() * this.width,
+            y: Math.random() * this.height,
+            length: Math.random() * 25 + 10,
+            speed: Math.random() * 12 + 3,
+            opacity: Math.random() * 0.6 + 0.15,
+            pushed: false,
+            targetX: null,
+            targetY: null
+          });
+        }
+      }
+      
+      setupEventListeners() {
+        // 鼠标移动推开效果
+        this.canvas.addEventListener('mousemove', (e) => {
+          const rect = this.canvas.getBoundingClientRect();
+          this.mouseX = e.clientX - rect.left;
+          this.mouseY = e.clientY - rect.top;
+          this.isMouseMoving = true;
+          
+          clearTimeout(this.mouseTimeout);
+          this.mouseTimeout = setTimeout(() => {
+            this.isMouseMoving = false;
+            this.mouseX = -1000;
+            this.mouseY = -1000;
+          }, 100);
+        });
+        
+        // 触摸移动推开效果
+        this.canvas.addEventListener('touchmove', (e) => {
+          e.preventDefault();
+          const touch = e.touches[0];
+          const rect = this.canvas.getBoundingClientRect();
+          this.mouseX = touch.clientX - rect.left;
+          this.mouseY = touch.clientY - rect.top;
+          this.isMouseMoving = true;
+          
+          clearTimeout(this.mouseTimeout);
+          this.mouseTimeout = setTimeout(() => {
+            this.isMouseMoving = false;
+            this.mouseX = -1000;
+            this.mouseY = -1000;
+          }, 100);
+        });
+        
+        // 双击哈气写字效果
+        this.canvas.addEventListener('dblclick', (e) => {
+          this.createBreath(e);
+        });
+        
+        // 触摸双击支持
+        this.canvas.addEventListener('touchend', (e) => {
+          const now = Date.now();
+          if (now - this.lastBreathTime < 300) {
+            // 双击触发哈气
+            const touch = e.changedTouches[0];
+            const rect = this.canvas.getBoundingClientRect();
+            const x = touch.clientX - rect.left;
+            const y = touch.clientY - rect.top;
+            this.createBreathAt(x, y);
+          }
+          this.lastBreathTime = now;
+        });
+        
+        // 哈气时鼠标移动画线
+        this.canvas.addEventListener('mousemove', (e) => {
+          if (this.isBreathing && !this.breathFading) {
+            const rect = this.canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            this.drawBreathLine(x, y);
+          }
+        });
+        
+        // 哈气时触摸移动画线
+        this.canvas.addEventListener('touchmove', (e) => {
+          if (this.isBreathing && !this.breathFading) {
+            e.preventDefault();
+            const touch = e.touches[0];
+            const rect = this.canvas.getBoundingClientRect();
+            const x = touch.clientX - rect.left;
+            const y = touch.clientY - rect.top;
+            this.drawBreathLine(x, y);
+          }
+        });
+      }
+      
+      createBreath(e) {
+        const rect = this.canvas.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        this.createBreathAt(x, y);
+      }
+      
+      createBreathAt(centerX, centerY) {
+        // 创建雾气圆形区域
+        this.breathCtx.globalCompositeOperation = 'source-over';
+        
+        // 绘制雾气圆形
+        const radius = 60;
+        const gradient = this.breathCtx.createRadialGradient(
+          centerX, centerY, 0,
+          centerX, centerY, radius
+        );
+        gradient.addColorStop(0, 'rgba(255, 255, 255, 0.8)');
+        gradient.addColorStop(0.5, 'rgba(255, 255, 255, 0.5)');
+        gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+        
+        this.breathCtx.fillStyle = gradient;
+        this.breathCtx.beginPath();
+        this.breathCtx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+        this.breathCtx.fill();
+        
+        this.breathOpacity = 0.9;
+        this.isBreathing = true;
+        this.breathFading = false;
+      }
+      
+      drawBreathLine(x, y) {
+        // 在雾气上画线
+        this.breathCtx.globalCompositeOperation = 'source-over';
+        this.breathCtx.strokeStyle = 'rgba(255, 255, 255, 0.6)';
+        this.breathCtx.lineWidth = 15;
+        this.breathCtx.lineCap = 'round';
+        this.breathCtx.lineJoin = 'round';
+        
+        // 绘制模糊的线条
+        this.breathCtx.shadowColor = 'rgba(255, 255, 255, 0.8)';
+        this.breathCtx.shadowBlur = 10;
+        
+        if (!this.lastBreathPoint) {
+          this.lastBreathPoint = { x, y };
+        }
+        
+        this.breathCtx.beginPath();
+        this.breathCtx.moveTo(this.lastBreathPoint.x, this.lastBreathPoint.y);
+        this.breathCtx.lineTo(x, y);
+        this.breathCtx.stroke();
+        
+        this.lastBreathPoint = { x, y };
+        this.breathCtx.shadowBlur = 0;
+      }
+      
+      fadeBreath() {
+        if (this.isBreathing && !this.breathFading) {
+          this.breathFading = true;
+          this.lastBreathPoint = null;
+          
+          // 3秒后开始消失
+          setTimeout(() => {
+            const fadeInterval = setInterval(() => {
+              this.breathOpacity -= 0.02;
+              
+              if (this.breathOpacity <= 0) {
+                this.breathOpacity = 0;
+                this.isBreathing = false;
+                this.breathFading = false;
+                // 清空雾气画布
+                this.breathCtx.clearRect(0, 0, this.breathCanvas.width, this.breathCanvas.height);
+                clearInterval(fadeInterval);
+              }
+            }, 50);
+          }, 3000);
+        }
+      }
+      
+      pushDrops() {
+        if (!this.isMouseMoving) return;
+        
+        for (let drop of this.drops) {
+          const dx = drop.x - this.mouseX;
+          const dy = drop.y - this.mouseY;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          
+          if (dist < this.pushRadius) {
+            // 计算推开方向
+            const angle = Math.atan2(dy, dx);
+            const force = (this.pushRadius - dist) / this.pushRadius * this.pushStrength;
+            
+            drop.x += Math.cos(angle) * force;
+            drop.y += Math.sin(angle) * force * 0.3;
+            
+            // 标记为被推开
+            drop.pushed = true;
+          }
+        }
+      }
+      
+      animate() {
+        // 1. 绘制雾气层（最底层）
+        if (this.breathOpacity > 0) {
+          this.ctx.globalAlpha = this.breathOpacity;
+          this.ctx.drawImage(this.breathCanvas, 0, 0);
+          this.ctx.globalAlpha = 1;
+        }
+        
+        // 2. 处理鼠标推开
+        this.pushDrops();
+        
+        // 3. 清空画布
+        this.ctx.clearRect(0, 0, this.width, this.height);
+        
+        // 4. 再次绘制雾气（确保在雨滴上层）
+        if (this.breathOpacity > 0) {
+          this.ctx.globalAlpha = this.breathOpacity;
+          this.ctx.drawImage(this.breathCanvas, 0, 0);
+          this.ctx.globalAlpha = 1;
+        }
+        
+        // 5. 绘制雨滴
+        const count = Math.floor(AppState.rainIntensity * 2);
+        
+        // 绘制主体雨滴
+        this.ctx.strokeStyle = 'rgba(200, 220, 255, 0.7)';
+        this.ctx.lineWidth = 1.2;
+        this.ctx.lineCap = 'round';
+        
+        for (let i = 0; i < Math.min(count, this.drops.length); i++) {
+          const drop = this.drops[i];
+          
+          // 计算渐变透明度
+          let alpha = drop.opacity;
+          if (drop.pushed) {
+            alpha = 0.1; // 被推开时变淡
+            // 逐渐恢复
+            drop.pushed = false;
+          }
+          
+          this.ctx.globalAlpha = alpha;
+          this.ctx.beginPath();
+          this.ctx.moveTo(drop.x, drop.y);
+          this.ctx.lineTo(drop.x - 0.5, drop.y + drop.length);
+          this.ctx.stroke();
+          
+          // 绘制雨滴高光
+          this.ctx.globalAlpha = alpha * 0.5;
+          this.ctx.beginPath();
+          this.ctx.moveTo(drop.x - 0.8, drop.y);
+          this.ctx.lineTo(drop.x - 0.8, drop.y + drop.length * 0.3);
+          this.ctx.stroke();
+          
+          // 更新位置
+          drop.y += drop.speed;
+          drop.x += 0.1; // 轻微向右偏移，模拟自然风
+          
+          // 边界检查
+          if (drop.y > this.height + drop.length) {
+            drop.y = -drop.length;
+            drop.x = Math.random() * this.width;
+          }
+          if (drop.x > this.width) {
+            drop.x = 0;
+          }
+        }
+        
+        this.ctx.globalAlpha = 1;
+        
+        // 触发哈气消失
+        if (this.isBreathing && !this.breathFading) {
+          this.fadeBreath();
+        }
+        
+        requestAnimationFrame(() => this.animate());
+      }
+    }
+
+    // ==================== 开屏动画 ====================
+    // 开屏动画
+function playSplashAnimation() {
+  const splash = document.getElementById('splashScreen');
+  const video = document.getElementById('splashVideo');
+  splashMusicGlobal = new Audio('splash.mp3');
+  
+  // 尝试播放音乐（可能被浏览器阻止）
+  const tryPlayMusic = () => {
+    splashMusicGlobal.play().catch(e => {
+      console.log('音乐自动播放被阻止，点击屏幕可播放');
+      // 添加临时提示
+      const toast = document.createElement('div');
+      toast.className = 'fixed top-20 left-1/2 transform -translate-x-1/2 bg-black/60 text-white text-xs px-3 py-1 rounded-full z-[10000]';
+      toast.innerText = '点击屏幕播放音乐';
+      document.body.appendChild(toast);
+      const playOnClick = () => {
+        splashMusicGlobal.play().catch(() => {});
+        toast.remove();
+        document.removeEventListener('click', playOnClick);
+      };
+      document.addEventListener('click', playOnClick);
+    });
+  };
+  
+  video.play().then(() => {
+    tryPlayMusic();
+  }).catch(() => {
+    // 自动播放被阻止，显示跳过按钮
+  });
+  
+  video.onended = () => {
+    splashMusicGlobal.pause();
+    splash.classList.add('hidden');
+    document.getElementById('loginScreen').style.display = 'flex';
+  };
+  
+  setTimeout(() => {
+    if (!splash.classList.contains('hidden')) {
+      skipSplash();
+      splashMusicGlobal.pause();
+    }
+  }, 7000);
+}
+
+function skipSplash() {
+  const splash = document.getElementById('splashScreen');
+  const video = document.getElementById('splashVideo');
+  video.pause();
+  // 停止音乐（如果有）
+  const existingAudio = document.querySelector('audio[src="splash.mp3"]');
+  if (existingAudio) existingAudio.pause();
+  splash.classList.add('hidden');
+  document.getElementById('loginScreen').style.display = 'flex';
+  if (splashMusicGlobal) splashMusicGlobal.pause();
+}
+
+    // ==================== 登录系统 ====================
+    function initLogin() {
+      const passwordInput = document.getElementById('passwordInput');
+      
+      passwordInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+          const password = passwordInput.value.trim();
+          
+          if (password === '开') {
+            // 创建新账号
+            const newPassword = prompt('请设置新密码：');
+            if (newPassword && newPassword.trim()) {
+              createAccount(newPassword.trim());
+              showToast('新账号创建成功！');
+              login(newPassword.trim());
+            }
+          } else if (AppState.accounts[password]) {
+            // 登录已有账号
+            login(password);
+          } else {
+            // 显示鲸鱼打工人动画
+            showWhaleWorker();
+          }
+        }
+      });
+    }
+
+    function createAccount(password) {
+      AppState.accounts[password] = {
+        projects: [],
+        notes: [],
+        characters: [],
+        todos: [],
+        diaries: [],
+        quotes: [],
+        stats: { daily: {}, totalWords: 0, totalTime: 0 },
+        achievements: [],
+        handbook: [],
+        pomodoro: { tasks: [], records: {} },
+        createdAt: new Date().toISOString()
+      };
+      saveAccounts();
+    }
+
+    function login(password) {
+      AppState.currentUser = password;
+      const account = AppState.accounts[password];
+      
+      // 加载账号数据
+      AppState.projects = account.projects || [];
+      AppState.notes = account.notes || [];
+      AppState.characters = account.characters || [];
+      AppState.todos = account.todos || [];
+      AppState.diaries = account.diaries || [];
+      AppState.quotes = account.quotes || [];
+      AppState.stats = account.stats || { daily: {}, totalWords: 0, totalTime: 0 };
+      AppState.achievements = account.achievements || [];
+      AppState.handbook = account.handbook || [];
+      AppState.pomodoro = account.pomodoro || { tasks: [], records: {} };
+      
+      document.getElementById('loginScreen').classList.add('hidden');
+      document.getElementById('uiLayer').classList.add('active');
+      
+      initApp();
+      showToast(`欢迎回来，${password === 'ysysysrjam' ? '主人' : '作家'}！`);
+    }
+
+    function showWhaleWorker() {
+  const workerScreen = document.getElementById('whaleWorkerScreen');
+  const workerVideo = document.getElementById('workerVideo');
+  const errorMusic = new Audio('error.mp3');
+  
+  document.getElementById('loginScreen').style.display = 'none';
+  workerScreen.classList.add('active');
+  workerVideo.currentTime = 0;
+  
+  // 尝试播放音乐
+  errorMusic.play().catch(e => console.log('错误音乐自动播放被阻止'));
+  
+  workerVideo.play();
+  
+  workerVideo.onended = () => {
+    errorMusic.pause();
+    workerScreen.classList.remove('active');
+    document.getElementById('loginScreen').style.display = 'flex';
+    document.getElementById('passwordInput').value = '';
+  };
+}
+
+    function saveAccounts() {
+      localStorage.setItem('rainWindow_accounts', JSON.stringify(AppState.accounts));
+    }
+
+    function saveCurrentAccount() {
+      if (!AppState.currentUser) return;
+      AppState.accounts[AppState.currentUser] = {
+        projects: AppState.projects,
+        notes: AppState.notes,
+        characters: AppState.characters,
+        todos: AppState.todos,
+        diaries: AppState.diaries,
+        quotes: AppState.quotes,
+        stats: AppState.stats,
+        achievements: AppState.achievements,
+        handbook: AppState.handbook,
+        pomodoro: AppState.pomodoro
+      };
+      saveAccounts();
+    }
+
+    // ==================== 工具函数 ====================
+    function showToast(message) {
+      const toast = document.createElement('div');
+      toast.className = 'toast fixed bottom-20 left-1/2 transform -translate-x-1/2 glass-panel px-5 py-2.5 rounded-full text-moon-white text-sm z-[1000]';
+      toast.textContent = message;
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 3000);
+    }
+
+    function openDrawer(id) {
+      document.getElementById(id).classList.add('open');
+      document.getElementById('overlay').classList.remove('opacity-0', 'pointer-events-none');
+    }
+
+    function closeAllDrawers() {
+      document.querySelectorAll('.drawer').forEach(d => d.classList.remove('open'));
+      document.getElementById('overlay').classList.add('opacity-0', 'pointer-events-none');
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.remove('active');
+    }
+
+    function updateDate() {
+      const dateEl = document.getElementById('currentDate');
+      const now = new Date();
+      dateEl.textContent = now.toLocaleDateString('zh-CN', { month: 'short', day: 'numeric', weekday: 'short' });
+    }
+
+    function updateWordCount() {
+      const editor = document.getElementById('mainEditor');
+      const count = editor.value.length;
+      document.getElementById('charCount').textContent = count + ' 字';
+      AppState.wordCount = count;
+      
+      const today = new Date().toDateString();
+      if (!AppState.stats.daily[today]) AppState.stats.daily[today] = { words: 0, time: 0 };
+      AppState.stats.daily[today].words = Math.max(AppState.stats.daily[today].words, count);
+      AppState.todayWords = count;
+      
+      const progress = Math.min((count / AppState.dailyGoal) * 100, 100);
+      document.getElementById('dailyGoalBar').style.width = progress + '%';
+      document.getElementById('dailyGoalText').textContent = `${count} / ${AppState.dailyGoal}`;
+      document.getElementById('menuTodayWords').textContent = count;
+      
+      saveCurrentAccount();
+    }
+
+    function exitFocusMode() {
+      AppState.isFocusMode = false;
+      document.body.classList.remove('focus-mode');
+    }
+
+    // ==================== 项目/章节系统 ====================
+    function renderProjects() {
+      const container = document.querySelector('#projectsList > div');
+      if (AppState.projects.length === 0) {
+        container.innerHTML = '<div class="flex-1 flex items-center justify-center text-moon-white/40 text-sm">还没有项目，点击"新建项目"开始创作</div>';
+        return;
+      }
+      container.innerHTML = AppState.projects.map(project => {
+        const totalWords = project.chapters?.reduce((sum, c) => sum + (c.content?.length || 0), 0) || 0;
+        const progress = Math.min((totalWords / (project.targetWords || 50000)) * 100, 100);
+        return `
+        <div class="project-card flex-shrink-0 w-56 glass-panel rounded-xl overflow-hidden" onclick="openProject(${project.id})">
+          <div class="h-2 bg-gradient-to-r from-rain-blue to-neon-pink" style="width: ${progress}%"></div>
+          <div class="p-4">
+            <h3 class="text-moon-white font-serif mb-1 truncate">${project.title}</h3>
+            <div class="text-xs text-moon-white/60 mb-2">${project.chapters?.length || 0} 章节 · ${totalWords}字</div>
+            <div class="h-1 bg-moon-white/10 rounded-full overflow-hidden">
+              <div class="h-full bg-gradient-to-r from-rain-blue to-neon-pink rounded-full transition-all" style="width: ${progress}%"></div>
+            </div>
+          </div>
+        </div>
+      `}).join('');
+    }
+
+    function openProject(id) {
+      const project = AppState.projects.find(p => p.id === id);
+      if (!project) return;
+      AppState.currentProject = project;
+      AppState.currentChapter = project.chapters?.[0] || null;
+      document.getElementById('projectSelector').textContent = project.title;
+      renderChapterList();
+      if (AppState.currentChapter) {
+        document.getElementById('chapterTitle').value = AppState.currentChapter.title || '';
+        document.getElementById('mainEditor').value = AppState.currentChapter.content || '';
+        updateWordCount();
+      } else {
+        document.getElementById('chapterTitle').value = '';
+        document.getElementById('mainEditor').value = '';
+      }
+      closeAllDrawers();
+      showToast(`已加载项目：${project.title}`);
+    }
+
+    function renderChapterList() {
+      const container = document.getElementById('chapterList');
+      if (!AppState.currentProject?.chapters) {
+        container.innerHTML = '<div class="text-center py-4 text-moon-white/40 text-xs">暂无章节</div>';
+        return;
+      }
+      
+      // 确保所有章节都有分支相关字段
+      AppState.currentProject.chapters.forEach(chapter => {
+        if (!chapter.hasOwnProperty('branchFrom')) chapter.branchFrom = null;
+        if (!chapter.hasOwnProperty('branchName')) chapter.branchName = '';
+        if (!chapter.hasOwnProperty('isMainLine')) chapter.isMainLine = true;
+        if (!chapter.hasOwnProperty('children')) chapter.children = [];
+        if (!chapter.hasOwnProperty('id')) chapter.id = Date.now() + Math.floor(Math.random() * 1000);
+      });
+      
+      container.innerHTML = AppState.currentProject.chapters.map((chapter, index) => {
+        const isBranch = chapter.branchFrom !== null;
+        const indent = isBranch ? 'pl-6' : '';
+        const branchIcon = isBranch ? '<span class="text-rain-blue/70 mr-1">🌿</span>' : '';
+        const branchLabel = chapter.branchName ? `<span class="text-xs text-rain-blue/60 ml-1">(${chapter.branchName})</span>` : '';
+        
+        return `
+        <div class="chapter-item ${indent} px-2 py-1.5 rounded-lg text-moon-white/80 text-xs ${chapter === AppState.currentChapter ? 'active' : ''}" 
+             onclick="selectChapter(${index})"
+             oncontextmenu="showChapterContextMenu(event, ${index})"
+             ontouchstart="handleTouchStart(event, ${index})"
+             ontouchend="handleTouchEnd(event, ${index})">
+          ${branchIcon}
+          <span class="text-moon-white/40 mr-1">${index + 1}</span>${chapter.title || '未命名'}${branchLabel}
+          ${!isBranch ? '<button class="ml-2 text-xs text-moon-white/50 hover:text-rain-blue" onclick="createBranchFromChapter(event, ' + index + ')">⚡</button>' : ''}
+        </div>
+        `;
+      }).join('');
+    }
+
+    function selectChapter(index) {
+      if (!AppState.currentProject) return;
+      // 保存当前章节
+      if (AppState.currentChapter) {
+        AppState.currentChapter.content = document.getElementById('mainEditor').value;
+        AppState.currentChapter.title = document.getElementById('chapterTitle').value;
+      }
+      AppState.currentChapter = AppState.currentProject.chapters[index];
+      document.getElementById('chapterTitle').value = AppState.currentChapter.title || '';
+      document.getElementById('mainEditor').value = AppState.currentChapter.content || '';
+      updateWordCount();
+      renderChapterList();
+      saveCurrentAccount();
+    }
+
+    function confirmNewProject() {
+      const title = document.getElementById('newProjectTitle').value.trim();
+      const target = parseInt(document.getElementById('newProjectTarget').value) || 50000;
+      if (!title) {
+        showToast('请输入书名');
+        return;
+      }
+      const project = {
+        id: Date.now(),
+        title,
+        targetWords: target,
+        chapters: [{ id: Date.now(), title: '第一章', content: '' }],
+        createdAt: new Date().toISOString()
+      };
+      AppState.projects.push(project);
+      saveCurrentAccount();
+      closeModal('newProjectModal');
+      renderProjects();
+      openProject(project.id);
+      showToast('项目创建成功');
+    }
+
+    // ==================== 日记系统 ====================
+    let selectedMood = 3;
+
+    function renderDiaries() {
+      const container = document.getElementById('diaryList');
+      const moodEmojis = ['', '😢', '😔', '😐', '🙂', '😄'];
+      if (AppState.diaries.length === 0) {
+        container.innerHTML = '<div class="text-center py-6 text-moon-white/40 text-sm">还没有日记</div>';
+        return;
+      }
+      container.innerHTML = AppState.diaries.slice().reverse().map(diary => `
+        <div class="glass-input rounded-lg p-3">
+          <div class="flex items-center justify-between mb-1">
+            <span class="text-xl">${moodEmojis[diary.mood] || '😐'}</span>
+            <span class="text-xs text-moon-white/40">${new Date(diary.date).toLocaleDateString()}</span>
+          </div>
+          <p class="text-sm text-moon-white/80 whitespace-pre-wrap">${diary.content}</p>
+        </div>
+      `).join('');
+    }
+
+    // ==================== 便签系统 ====================
+    let selectedNoteTag = '小说梗';
+
+    function renderNotes() {
+      const container = document.getElementById('notesList');
+      if (AppState.notes.length === 0) {
+        container.innerHTML = '<div class="text-center py-6 text-moon-white/40 text-sm">还没有便签</div>';
+        return;
+      }
+      container.innerHTML = AppState.notes.slice().reverse().map(note => `
+        <div class="glass-input rounded-lg p-3">
+          <p class="text-moon-white/80 text-sm mb-2 whitespace-pre-wrap">${note.content}</p>
+          <div class="flex items-center justify-between">
+            <span class="px-2 py-0.5 rounded-full text-xs bg-rain-blue/20 text-rain-blue">${note.tag}</span>
+            <button onclick="deleteNote(${note.id})" class="text-moon-white/40 hover:text-red-400 transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function deleteNote(id) {
+      AppState.notes = AppState.notes.filter(n => n.id !== id);
+      saveCurrentAccount();
+      renderNotes();
+      showToast('便签已删除');
+    }
+
+    // ==================== 待办系统 ====================
+    function renderTodos() {
+      const container = document.getElementById('todoList');
+      if (AppState.todos.length === 0) {
+        container.innerHTML = '<div class="text-center py-6 text-moon-white/40 text-sm">没有待办</div>';
+        return;
+      }
+      container.innerHTML = AppState.todos.map(todo => `
+        <div class="glass-input rounded-lg px-3 py-2 flex items-center gap-2 ${todo.completed ? 'opacity-50' : ''}">
+          <button onclick="toggleTodo(${todo.id})" class="w-4 h-4 rounded border border-moon-white/30 flex items-center justify-center ${todo.completed ? 'bg-rain-blue border-rain-blue' : ''} transition-colors">
+            ${todo.completed ? '<svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>' : ''}
+          </button>
+          <span class="flex-1 text-sm text-moon-white/80 ${todo.completed ? 'line-through' : ''}">${todo.content}</span>
+          <button onclick="deleteTodo(${todo.id})" class="text-moon-white/40 hover:text-red-400 transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+        </div>
+      `).join('');
+    }
+
+    function toggleTodo(id) {
+      const todo = AppState.todos.find(t => t.id === id);
+      if (todo) {
+        todo.completed = !todo.completed;
+        saveCurrentAccount();
+        renderTodos();
+        if (todo.completed) {
+          musicSystem.play('whale');
+          setTimeout(() => musicSystem.stop(), 3000);
+          showToast('✅ 完成！');
+        }
+      }
+    }
+
+    function deleteTodo(id) {
+      AppState.todos = AppState.todos.filter(t => t.id !== id);
+      saveCurrentAccount();
+      renderTodos();
+    }
+
+    // ==================== 金句系统 ====================
+    function renderQuotes() {
+      const container = document.getElementById('quotesList');
+      if (AppState.quotes.length === 0) {
+        container.innerHTML = '<div class="text-center py-6 text-moon-white/40 text-sm">还没有收藏</div>';
+        return;
+      }
+      container.innerHTML = AppState.quotes.slice().reverse().map(quote => `
+        <div class="glass-input rounded-lg p-3">
+          <p class="text-moon-white/90 italic text-sm mb-1">"${quote.content}"</p>
+          <p class="text-xs text-moon-white/50 text-right">—— ${quote.author || '未知'}</p>
+        </div>
+      `).join('');
+    }
+
+    // ==================== 角色系统 ====================
+    function renderCharacters() {
+      const container = document.getElementById('characterList');
+      if (AppState.characters.length === 0) {
+        container.innerHTML = '<div class="text-center py-6 text-moon-white/40 text-sm">还没有角色</div>';
+        return;
+      }
+      container.innerHTML = AppState.characters.map(char => `
+        <div class="glass-input rounded-lg p-3">
+          <div class="flex items-start justify-between mb-1">
+            <div>
+              <h4 class="text-moon-white text-sm font-bold">${char.name}</h4>
+              <p class="text-xs text-moon-white/50">${char.role || ''}</p>
+            </div>
+            <button onclick="deleteCharacter(${char.id})" class="text-moon-white/40 hover:text-red-400 transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+          </div>
+          <p class="text-xs text-moon-white/70 mb-1">${char.description || ''}</p>
+          ${char.tags ? `<div class="flex gap-1 flex-wrap">${char.tags.split(' ').map(t => `<span class="text-xs px-1.5 py-0.5 rounded bg-white/10 text-moon-white/60">${t}</span>`).join('')}</div>` : ''}
+        </div>
+      `).join('');
+    }
+
+    function deleteCharacter(id) {
+      AppState.characters = AppState.characters.filter(c => c.id !== id);
+      saveCurrentAccount();
+      renderCharacters();
+    }
+
+    function confirmNewCharacter() {
+      const name = document.getElementById('charName').value.trim();
+      const role = document.getElementById('charRole').value.trim();
+      const desc = document.getElementById('charDesc').value.trim();
+      const tags = document.getElementById('charTags').value.trim();
+      
+      if (!name) {
+        showToast('请输入角色姓名');
+        return;
+      }
+      
+      AppState.characters.push({
+        id: Date.now(),
+        name,
+        role,
+        description: desc,
+        tags
+      });
+      saveCurrentAccount();
+      closeModal('newCharacterModal');
+      renderCharacters();
+      showToast('角色添加成功');
+      
+      // 清空表单
+      document.getElementById('charName').value = '';
+      document.getElementById('charRole').value = '';
+      document.getElementById('charDesc').value = '';
+      document.getElementById('charTags').value = '';
+    }
+
+    // ==================== 手账本系统 ====================
+    let handbookCtx = null;
+    let isDrawing = false;
+    let currentTool = 'pen';
+    let hbCanvas = null;
+
+    function initHandbook() {
+      hbCanvas = document.getElementById('handbookCanvas');
+      handbookCtx = hbCanvas.getContext('2d');
+      
+      const resizeCanvas = () => {
+        const container = document.getElementById('handbookPaper');
+        hbCanvas.width = container.clientWidth;
+        hbCanvas.height = container.clientHeight;
+        // 重绘当前页面
+        if (AppState.currentHandbookPage?.canvasData) {
+          const img = new Image();
+          img.onload = () => {
+            handbookCtx.clearRect(0, 0, hbCanvas.width, hbCanvas.height);
+            handbookCtx.drawImage(img, 0, 0);
+            // 重绘所有图片
+            if (AppState.currentHandbookPage.images) {
+              AppState.currentHandbookPage.images.forEach(imgObj => {
+                const img = new Image();
+                img.onload = () => {
+                  handbookCtx.drawImage(img, imgObj.x, imgObj.y, imgObj.width, imgObj.height);
+                };
+                img.src = imgObj.dataURL;
+              });
+            }
+          };
+          img.src = AppState.currentHandbookPage.canvasData;
+        }
+      };
+      resizeCanvas();
+      window.addEventListener('resize', resizeCanvas);
+      
+    // 图片插入功能
+    document.getElementById('hbToolImage').onclick = () => {
+      document.getElementById('hbImageInput').click();
+    };
+
+    // 贴纸功能
+    document.getElementById('hbToolSticker').onclick = () => {
+      openStickerPanel();
+    };
+      
+      document.getElementById('hbImageInput').onchange = (e) => {
+        const file = e.target.files[0];
+        if (file && file.type.startsWith('image/')) {
+          const reader = new FileReader();
+          reader.onload = (event) => {
+            const img = new Image();
+            img.onload = () => {
+              // 计算保持比例的尺寸
+              const ratio = Math.min(100/img.width, 100/img.height);
+              const width = img.width * ratio;
+              const height = img.height * ratio;
+              const x = (hbCanvas.width - width) / 2;
+              const y = (hbCanvas.height - height) / 2;
+              
+              // 绘制图片
+              handbookCtx.drawImage(img, x, y, width, height);
+              
+              // 存储图片对象
+              if (!AppState.currentHandbookPage.images) {
+                AppState.currentHandbookPage.images = [];
+              }
+              AppState.currentHandbookPage.images.push({
+                x, y, width, height, dataURL: event.target.result
+              });
+              
+              // 保存当前画布状态
+              AppState.currentHandbookPage.canvasData = hbCanvas.toDataURL();
+              saveCurrentAccount();
+            };
+            img.src = event.target.result;
+          };
+          reader.readAsDataURL(file);
+        }
+      };
+      
+      // 绘图事件
+      hbCanvas.addEventListener('mousedown', handleMouseDown);
+      hbCanvas.addEventListener('mousemove', handleMouseMove);
+      hbCanvas.addEventListener('mouseup', handleMouseUp);
+      hbCanvas.addEventListener('mouseout', handleMouseUp);
+      
+      // 触摸支持
+      hbCanvas.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        const touch = e.touches[0];
+        const mouseEvent = new MouseEvent('mousedown', {
+          clientX: touch.clientX,
+          clientY: touch.clientY
+        });
+        hbCanvas.dispatchEvent(mouseEvent);
+      });
+      
+      hbCanvas.addEventListener('touchmove', (e) => {
+        e.preventDefault();
+        const touch = e.touches[0];
+        const mouseEvent = new MouseEvent('mousemove', {
+          clientX: touch.clientX,
+          clientY: touch.clientY
+        });
+        hbCanvas.dispatchEvent(mouseEvent);
+      });
+      
+      hbCanvas.addEventListener('touchend', () => {
+        const mouseEvent = new MouseEvent('mouseup', {});
+        hbCanvas.dispatchEvent(mouseEvent);
+      });
+      
+      renderHandbookList();
+    }
+    
+    // 图片拖动相关变量
+    let isDraggingImage = false;
+    let draggedImageIndex = -1;
+    let dragOffsetX = 0;
+    let dragOffsetY = 0;
+    
+    function handleMouseDown(e) {
+      const rect = hbCanvas.getBoundingClientRect();
+      const mouseX = e.clientX - rect.left;
+      const mouseY = e.clientY - rect.top;
+      
+      // 检查是否点击到图片
+      if (AppState.currentHandbookPage?.images) {
+        for (let i = AppState.currentHandbookPage.images.length - 1; i >= 0; i--) {
+          const img = AppState.currentHandbookPage.images[i];
+          if (mouseX >= img.x && mouseX <= img.x + img.width &&
+              mouseY >= img.y && mouseY <= img.y + img.height) {
+            isDraggingImage = true;
+            draggedImageIndex = i;
+            dragOffsetX = mouseX - img.x;
+            dragOffsetY = mouseY - img.y;
+            
+            // 将图片移到最上层
+            const imgObj = AppState.currentHandbookPage.images.splice(i, 1)[0];
+            AppState.currentHandbookPage.images.push(imgObj);
+            draggedImageIndex = AppState.currentHandbookPage.images.length - 1;
+            
+            // 重绘画布
+            redrawCanvas();
+            return;
+          }
+        }
+      }
+      
+      // 如果没有点击到图片，则开始绘制
+      startDrawing(e);
+    }
+    
+    function handleMouseMove(e) {
+      if (isDraggingImage && draggedImageIndex >= 0) {
+        const rect = hbCanvas.getBoundingClientRect();
+        const mouseX = e.clientX - rect.left;
+        const mouseY = e.clientY - rect.top;
+        
+        const img = AppState.currentHandbookPage.images[draggedImageIndex];
+        img.x = mouseX - dragOffsetX;
+        img.y = mouseY - dragOffsetY;
+        
+        // 重绘画布
+        redrawCanvas();
+      } else {
+        draw(e);
+      }
+    }
+    
+    function handleMouseUp() {
+      if (isDraggingImage) {
+        isDraggingImage = false;
+        draggedImageIndex = -1;
+        // 保存当前画布状态
+        AppState.currentHandbookPage.canvasData = hbCanvas.toDataURL();
+        saveCurrentAccount();
+      } else {
+        stopDrawing();
+      }
+    }
+    
+    function redrawCanvas() {
+      // 清空画布
+      handbookCtx.clearRect(0, 0, hbCanvas.width, hbCanvas.height);
+      
+      // 重绘背景
+      if (AppState.currentHandbookPage?.canvasData) {
+        const bgImg = new Image();
+        bgImg.onload = () => {
+          handbookCtx.drawImage(bgImg, 0, 0);
+          // 重绘所有图片
+          if (AppState.currentHandbookPage.images) {
+            AppState.currentHandbookPage.images.forEach(imgObj => {
+              const img = new Image();
+              img.onload = () => {
+                handbookCtx.drawImage(img, imgObj.x, imgObj.y, imgObj.width, imgObj.height);
+              };
+              img.src = imgObj.dataURL;
+            });
+          }
+        };
+        bgImg.src = AppState.currentHandbookPage.canvasData;
+      }
+    }
+
+    function startDrawing(e) {
+      if (currentTool !== 'pen') return;
+      isDrawing = true;
+      const rect = hbCanvas.getBoundingClientRect();
+      handbookCtx.beginPath();
+      handbookCtx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
+    }
+
+    function draw(e) {
+      if (!isDrawing || currentTool !== 'pen') return;
+      const rect = hbCanvas.getBoundingClientRect();
+      handbookCtx.lineWidth = document.getElementById('hbSize').value;
+      handbookCtx.strokeStyle = document.getElementById('hbColor').value;
+      handbookCtx.lineCap = 'round';
+      handbookCtx.lineJoin = 'round';
+      handbookCtx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
+      handbookCtx.stroke();
+    }
+
+    function stopDrawing() {
+      isDrawing = false;
+      handbookCtx.beginPath();
+    }
+
+    function renderHandbookList() {
+      const container = document.getElementById('handbookList');
+      if (AppState.handbook.length === 0) {
+        container.innerHTML = '<div class="text-center py-4 text-moon-white/40 text-xs">还没有手账</div>';
+        return;
+      }
+      container.innerHTML = AppState.handbook.map((page, index) => `
+        <div class="glass-input rounded-lg p-2 cursor-pointer transition-colors ${page === AppState.currentHandbookPage ? 'border-rain-blue bg-white/5' : 'hover:bg-white/5'}" onclick="loadHandbookPage(${index})">
+          <div class="text-xs text-moon-white/60">${new Date(page.date).toLocaleDateString()}</div>
+          <div class="text-xs text-moon-white/40 truncate">${page.text?.substring(0, 20) || '空白页'}</div>
+        </div>
+      `).join('');
+    }
+
+    function loadHandbookPage(index) {
+      // 保存当前页面
+      if (AppState.currentHandbookPage) {
+        AppState.currentHandbookPage.text = document.getElementById('handbookText').value;
+        AppState.currentHandbookPage.canvasData = hbCanvas.toDataURL();
+      }
+      
+      AppState.currentHandbookPage = AppState.handbook[index];
+      document.getElementById('handbookText').value = AppState.currentHandbookPage.text || '';
+      // 切换纸张类型
+      document.getElementById('paperType').value = AppState.currentHandbookPage.paperType || '1';
+      loadHandbookBackground();
+      
+      // 加载画布
+      handbookCtx.clearRect(0, 0, hbCanvas.width, hbCanvas.height);
+      if (AppState.currentHandbookPage.canvasData) {
+        const img = new Image();
+        img.onload = () => handbookCtx.drawImage(img, 0, 0);
+        img.src = AppState.currentHandbookPage.canvasData;
+      }
+      
+      renderHandbookList();
+    }
+
+    function updatePaperType() {
+      const paperValue = document.getElementById('paperType').value;
+      const paperEl = document.getElementById('handbookPaper');
+      
+      // 设置对应图片背景
+      paperEl.style.backgroundImage = `url('${paperValue}.jpg')`;
+      paperEl.style.backgroundSize = 'cover';
+      paperEl.style.backgroundPosition = 'center';
+      
+      if (AppState.currentHandbookPage) {
+        AppState.currentHandbookPage.paperType = paperValue;
+        // 清除自定义背景
+        delete AppState.currentHandbookPage.backgroundImage;
+      }
+    }
+
+    // ==================== 导入背景功能 ====================
+    function initImportBackground() {
+      const importBtn = document.getElementById('importBackgroundBtn');
+      const fileInput = document.getElementById('backgroundInput');
+      
+      importBtn.addEventListener('click', () => {
+        fileInput.click();
+      });
+      
+      fileInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file && file.type.startsWith('image/')) {
+          const reader = new FileReader();
+          reader.onload = (event) => {
+            const dataURL = event.target.result;
+            setCustomBackground(dataURL);
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+    }
+
+    function setCustomBackground(dataURL) {
+      const paperEl = document.getElementById('handbookPaper');
+      paperEl.style.backgroundImage = `url('${dataURL}')`;
+      paperEl.style.backgroundSize = 'cover';
+      paperEl.style.backgroundPosition = 'center';
+      
+      if (AppState.currentHandbookPage) {
+        AppState.currentHandbookPage.backgroundImage = dataURL;
+        // 清除预设纸张类型
+        delete AppState.currentHandbookPage.paperType;
+        saveCurrentAccount();
+      }
+      showToast('背景图片已导入');
+    }
+
+    function loadHandbookBackground() {
+      const paperEl = document.getElementById('handbookPaper');
+      if (AppState.currentHandbookPage?.backgroundImage) {
+        // 加载自定义背景
+        paperEl.style.backgroundImage = `url('${AppState.currentHandbookPage.backgroundImage}')`;
+        paperEl.style.backgroundSize = 'cover';
+        paperEl.style.backgroundPosition = 'center';
+      } else if (AppState.currentHandbookPage?.paperType) {
+        // 加载预设纸张
+        updatePaperType();
+      } else {
+        // 默认背景
+        paperEl.style.backgroundImage = `url('1.jpg')`;
+        paperEl.style.backgroundSize = 'cover';
+        paperEl.style.backgroundPosition = 'center';
+      }
+    }
+
+    // ==================== 番茄钟系统 ====================
+    let pomoTimer = null;
+    let pomoTimeLeft = 25 * 60;
+    let pomoIsRunning = false;
+    let pomoCurrentTask = null;
+    let pomoMode = 25;
+
+    function renderTaskList() {
+      const container = document.getElementById('taskList');
+      const tasks = AppState.pomodoro.tasks || [];
+      if (tasks.length === 0) {
+        container.innerHTML = '<div class="text-center py-4 text-moon-white/40 text-xs">还没有任务</div>';
+        return;
+      }
+      container.innerHTML = tasks.map(task => `
+        <div class="glass-input rounded-lg px-2 py-1.5 flex items-center gap-2 cursor-pointer transition-colors ${pomoCurrentTask?.id === task.id ? 'border-yanzhi bg-white/5' : 'hover:bg-white/5'}" onclick="selectPomoTask(${task.id})">
+          <div class="w-2 h-2 rounded-full" style="background: ${task.color || '#9D2933'}"></div>
+          <span class="flex-1 text-xs text-moon-white/80 truncate">${task.name}</span>
+          <span class="text-xs text-moon-white/40">${formatPomoTime(task.totalTime || 0)}</span>
+        </div>
+      `).join('');
+    }
+
+    function selectPomoTask(id) {
+      pomoCurrentTask = AppState.pomodoro.tasks.find(t => t.id === id);
+      document.getElementById('currentTaskName').textContent = pomoCurrentTask?.name || '选择一个任务开始';
+      renderTaskList();
+    }
+
+    function formatPomoTime(seconds) {
+      const mins = Math.floor(seconds / 60);
+      return `${mins}分钟`;
+    }
+
+    function startPomodoro() {
+      if (!pomoCurrentTask) {
+        showToast('请先选择一个任务');
+        return;
+      }
+      if (pomoIsRunning) return;
+      
+      pomoIsRunning = true;
+      document.getElementById('pomoStart').classList.add('hidden');
+      document.getElementById('pomoPause').classList.remove('hidden');
+      
+      pomoTimer = setInterval(() => {
+        pomoTimeLeft--;
+        updatePomoDisplay();
+        
+        // 记录时间
+        const today = new Date().toDateString();
+        if (!AppState.pomodoro.records[today]) AppState.pomodoro.records[today] = {};
+        if (!AppState.pomodoro.records[today][pomoCurrentTask.id]) {
+          AppState.pomodoro.records[today][pomoCurrentTask.id] = 0;
+        }
+        AppState.pomodoro.records[today][pomoCurrentTask.id]++;
+        pomoCurrentTask.totalTime = (pomoCurrentTask.totalTime || 0) + 1;
+        
+        if (pomoTimeLeft <= 0) {
+          stopPomodoro();
+          musicSystem.play('whale');
+          setTimeout(() => musicSystem.stop(), 5000);
+          showToast('🎉 专注完成！');
+        }
+        
+        saveCurrentAccount();
+      }, 1000);
+    }
+
+    function pausePomodoro() {
+      pomoIsRunning = false;
+      clearInterval(pomoTimer);
+      document.getElementById('pomoStart').classList.remove('hidden');
+      document.getElementById('pomoPause').classList.add('hidden');
+    }
+
+    function stopPomodoro() {
+      pomoIsRunning = false;
+      clearInterval(pomoTimer);
+      pomoTimeLeft = pomoMode * 60;
+      updatePomoDisplay();
+      document.getElementById('pomoStart').classList.remove('hidden');
+      document.getElementById('pomoPause').classList.add('hidden');
+    }
+
+    function updatePomoDisplay() {
+      const mins = Math.floor(pomoTimeLeft / 60);
+      const secs = pomoTimeLeft % 60;
+      document.getElementById('pomodoroTimer').textContent = 
+        `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+    }
+
+    function renderPomoCharts() {
+      // 今日扇形图
+      const today = new Date().toDateString();
+      const todayData = AppState.pomodoro.records[today] || {};
+      const tasks = AppState.pomodoro.tasks || [];
+      
+      const colors = ['#9D2933', '#F3C13A', '#1E3A5F', '#9D6656', '#5E8B6E', '#B8A1C9'];
+      const chartData = tasks.map((task, i) => ({
+        name: task.name,
+        value: (todayData[task.id] || 0) / 60,
+        color: colors[i % colors.length]
+      })).filter(d => d.value > 0);
+      
+      const total = chartData.reduce((sum, d) => sum + d.value, 0);
+      document.getElementById('todayPomoTotal').textContent = total > 0 ? `今日专注: ${Math.floor(total)}分钟` : '今日暂无专注记录';
+      
+      // 绘制扇形图
+      const canvas = document.getElementById('todayPomoChart');
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      if (chartData.length === 0) {
+        ctx.fillStyle = 'rgba(255,255,255,0.1)';
+        ctx.beginPath();
+        ctx.arc(100, 100, 80, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = 'rgba(255,255,255,0.5)';
+        ctx.font = '12px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('暂无数据', 100, 105);
+        return;
+      }
+      
+      let startAngle = -Math.PI / 2;
+      chartData.forEach(data => {
+        const angle = (data.value / total) * Math.PI * 2;
+        ctx.fillStyle = data.color;
+        ctx.beginPath();
+        ctx.moveTo(100, 100);
+        ctx.arc(100, 100, 80, startAngle, startAngle + angle);
+        ctx.closePath();
+        ctx.fill();
+        startAngle += angle;
+      });
+      
+      // 中心空白
+      ctx.fillStyle = '#0a0f1a';
+      ctx.beginPath();
+      ctx.arc(100, 100, 50, 0, Math.PI * 2);
+      ctx.fill();
+      
+      // 周统计条形图
+      renderWeekChart();
+    }
+
+    function renderWeekChart() {
+      const canvas = document.getElementById('weekPomoChart');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      const days = [];
+      const data = [];
+      for (let i = 6; i >= 0; i--) {
+        const date = new Date();
+        date.setDate(date.getDate() - i);
+        const dateStr = date.toDateString();
+        days.push(date.toLocaleDateString('zh-CN', { weekday: 'short' }));
+        
+        const records = AppState.pomodoro.records[dateStr] || {};
+        const total = Object.values(records).reduce((sum, v) => sum + v, 0);
+        data.push(total / 60);
+      }
+      
+      const max = Math.max(...data, 1);
+      const barWidth = 30;
+      const gap = 15;
+      const startX = 20;
+      
+      data.forEach((value, i) => {
+        const height = (value / max) * 80;
+        const x = startX + i * (barWidth + gap);
+        const y = 100 - height;
+        
+        const gradient = ctx.createLinearGradient(0, y, 0, 100);
+        gradient.addColorStop(0, '#9D2933');
+        gradient.addColorStop(1, '#F3C13A');
+        ctx.fillStyle = gradient;
+        ctx.fillRect(x, y, barWidth, height);
+        
+        ctx.fillStyle = 'rgba(255,255,255,0.5)';
+        ctx.font = '10px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(days[i], x + barWidth / 2, 115);
+        
+        if (value > 0) {
+          ctx.fillText(Math.floor(value) + 'm', x + barWidth / 2, y - 5);
+        }
+      });
+    }
+
+    // ==================== 市场分析 ====================
+    function analyzeMarketData() {
+      const input = document.getElementById('marketDataInput').value.trim();
+      if (!input) {
+        showToast('请输入数据');
+        return;
+      }
+      
+      const lines = input.split('\n');
+      const books = [];
+      const genres = ['都市', '玄幻', '仙侠', '科幻', '悬疑', '古言', '现言', '重生', '系统', '无限流', '种田', '基建', '快穿', '穿书', '末世', '星际', '西幻', '东方', '历史', '军事', '游戏', '体育', '轻小说'];
+      const tags = ['甜宠', '爽文', '虐渣', '复仇', '先婚后爱', '权谋', '穿越', '快穿', '囤货', '基建', '团宠', '马甲', '打脸', '逆袭', '双强', '破镜重圆', '暗恋', '青梅竹马', '年上', '年下', '强强', '治愈', '致郁', '轻松', '正剧', '悲剧', '喜剧'];
+      
+      // 隐藏简介分析结果
+      document.getElementById('summaryAnalysisResult').classList.add('hidden');
+      
+      lines.forEach(line => {
+        const match = line.match(/[《"']([^《"']+)[《"']/);
+        if (match) {
+          books.push({ title: match[1], fullLine: line });
+        }
+      });
+      
+      if (books.length === 0) {
+        showToast('未能识别到榜单数据，尝试进行简介分析...');
+        analyzeSummaryData();
+        return;
+      }
+      
+      // 分析题材
+      const foundGenres = genres.filter(g => input.includes(g));
+      // 分析标签
+      const foundTags = tags.filter(t => input.includes(t));
+      // 书名模式
+      const titlePatterns = books.slice(0, 5).map(b => b.title);
+      
+      // 显示结果
+      document.getElementById('marketAnalysisResult').classList.remove('hidden');
+      
+      document.getElementById('hotGenres').innerHTML = foundGenres.length > 0 
+        ? foundGenres.map(g => `<span class="px-2 py-1 rounded-full text-xs bg-yanzhi/30 text-white border border-yanzhi/50">${g}</span>`).join('')
+        : '<span class="text-moon-white/40 text-xs">未识别到热门题材</span>';
+      
+      document.getElementById('hotTags').innerHTML = foundTags.length > 0
+        ? foundTags.map(t => `<span class="px-2 py-1 rounded-full text-xs bg-tenghuang/30 text-white border border-tenghuang/50">${t}</span>`).join('')
+        : '<span class="text-moon-white/40 text-xs">未识别到标签</span>';
+      
+      document.getElementById('titleFormulas').innerHTML = titlePatterns.map(t => `<li class="text-moon-white/70">《${t}》</li>`).join('');
+      
+      // 生成建议
+      let advice = `分析到${books.length}本作品。`;
+      if (foundGenres.length > 0) advice += `热门题材：${foundGenres.slice(0, 3).join('、')}。`;
+      if (foundTags.length > 0) advice += `推荐标签：${foundTags.slice(0, 3).join('、')}。`;
+      advice += '建议书名控制在6-10字，前3章设置强冲突点，每章结尾留钩子。';
+      
+      document.getElementById('writingAdvice').textContent = advice;
+    }
+
+    // ==================== 简介分析 ====================
+    function analyzeSummaryData() {
+      const input = document.getElementById('marketDataInput').value.trim();
+      if (!input) {
+        showToast('请输入简介文本');
+        return;
+      }
+      
+      // 显示市场分析结果区域
+      document.getElementById('marketAnalysisResult').classList.remove('hidden');
+      // 显示简介分析结果
+      document.getElementById('summaryAnalysisResult').classList.remove('hidden');
+      
+      // 关键词提取
+      const keywords = extractKeywords(input);
+      // 题材分析
+      const genres = analyzeGenres(input);
+      // 情绪分析
+      const sentiment = analyzeSentiment(input);
+      
+      // 显示关键词
+      document.getElementById('summaryKeywords').innerHTML = keywords.length > 0
+        ? keywords.map(k => `<span class="px-2 py-1 rounded-full text-xs bg-rain-blue/30 text-white">${k}</span>`).join('')
+        : '<span class="text-moon-white/40 text-xs">未提取到关键词</span>';
+      
+      // 显示题材
+      document.getElementById('summaryGenres').innerHTML = genres.length > 0
+        ? genres.map(g => `<span class="px-2 py-1 rounded-full text-xs bg-neon-pink/30 text-white">${g}</span>`).join('')
+        : '<span class="text-moon-white/40 text-xs">未识别到题材</span>';
+      
+      // 显示情绪分析
+      const sentimentScore = (sentiment + 1) * 50; // 从-1到1转换为0%到100%
+      document.querySelector('#sentimentMeter > div').style.width = sentimentScore + '%';
+      document.getElementById('sentimentScore').textContent = `情感分数: ${Math.round(sentimentScore)}/100`;
+      
+      // 更新写作建议
+      let advice = "简介分析结果：";
+      if (keywords.length > 0) advice += `关键词: ${keywords.slice(0, 3).join('、')}。`;
+      if (genres.length > 0) advice += `题材: ${genres.slice(0, 3).join('、')}。`;
+      advice += sentimentScore > 70 ? "情绪积极向上，" : sentimentScore < 30 ? "情绪较为消极，" : "情绪较为中性，";
+      advice += "建议调整简介以更好地吸引目标读者。";
+      
+      document.getElementById('writingAdvice').textContent = advice;
+    }
+
+    function extractKeywords(text) {
+      // 简单的关键词提取算法
+      const words = text.replace(/[^\u4e00-\u9fa5]/g, ' ').split(/\s+/).filter(w => w.length > 1);
+      const freq = {};
+      words.forEach(w => freq[w] = (freq[w] || 0) + 1);
+      
+      return Object.entries(freq)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 10)
+        .map(([word]) => word);
+    }
+
+    function analyzeGenres(text) {
+      const genreKeywords = {
+        '都市': ['都市', '现代', '职场', '商战', '娱乐圈', '校园'],
+        '玄幻': ['修炼', '修仙', '修真', '灵气', '法宝', '宗门'],
+        '仙侠': ['仙侠', '仙人', '天界', '魔界', '飞升', '渡劫'],
+        '科幻': ['未来', '科技', '机器人', '外星', '太空', '星际'],
+        '悬疑': ['谜团', '推理', '侦破', '悬疑', '谜题', '真相'],
+        '言情': ['爱情', '恋爱', '心动', '甜蜜', '虐恋', '深情'],
+        '历史': ['古代', '历史', '王朝', '帝王', '将军', '宫廷'],
+        '奇幻': ['魔法', '奇幻', '异世界', '龙', '精灵', '巫师'],
+        '军事': ['战争', '军事', '战术', '战场', '特种兵', '军人'],
+        '游戏': ['游戏', '网游', '电竞', '副本', '装备', '技能']
+      };
+      
+      const foundGenres = [];
+      for (const [genre, keywords] of Object.entries(genreKeywords)) {
+        if (keywords.some(k => text.includes(k))) {
+          foundGenres.push(genre);
+        }
+      }
+      return foundGenres.slice(0, 5);
+    }
+
+    function analyzeSentiment(text) {
+      // 简单的情绪分析
+      const positiveWords = ['开心', '快乐', '幸福', '美好', '成功', '胜利', '爱', '喜欢', '温暖', '阳光'];
+      const negativeWords = ['痛苦', '悲伤', '难过', '死亡', '失去', '失败', '恨', '讨厌', '黑暗', '绝望'];
+      
+      let positiveCount = 0;
+      let negativeCount = 0;
+      
+      positiveWords.forEach(word => {
+        const regex = new RegExp(word, 'g');
+        positiveCount += (text.match(regex) || []).length;
+      });
+      
+      negativeWords.forEach(word => {
+        const regex = new RegExp(word, 'g');
+        negativeCount += (text.match(regex) || []).length;
+      });
+      
+      const total = positiveCount + negativeCount;
+      if (total === 0) return 0;
+      
+      return (positiveCount - negativeCount) / total;
+    }
+
+    // ==================== 导出功能 ====================
+    // ==================== 贴纸功能 ====================
+    function openStickerPanel() {
+      const stickerPanel = document.createElement('div');
+      stickerPanel.className = 'fixed bottom-24 left-1/2 transform -translate-x-1/2 glass-panel rounded-2xl p-4 z-[500]';
+      stickerPanel.innerHTML = `
+        <div class="flex gap-3 mb-3">
+          <button class="sticker-btn w-12 h-12 rounded-xl flex items-center justify-center text-2xl bg-white/10 hover:bg-rain-blue/20 transition-colors" data-sticker="star">⭐</button>
+          <button class="sticker-btn w-12 h-12 rounded-xl flex items-center justify-center text-2xl bg-white/10 hover:bg-rain-blue/20 transition-colors" data-sticker="heart">❤️</button>
+          <button class="sticker-btn w-12 h-12 rounded-xl flex items-center justify-center text-2xl bg-white/10 hover:bg-rain-blue/20 transition-colors" data-sticker="flower">🌸</button>
+          <button class="sticker-btn w-12 h-12 rounded-xl flex items-center justify-center text-2xl bg-white/10 hover:bg-rain-blue/20 transition-colors" data-sticker="smile">😊</button>
+          <button class="sticker-btn w-12 h-12 rounded-xl flex items-center justify-center text-2xl bg-white/10 hover:bg-rain-blue/20 transition-colors" data-sticker="moon">🌙</button>
+        </div>
+        <div class="text-center">
+          <button onclick="this.parentElement.parentElement.remove()" class="text-xs text-moon-white/60 hover:text-moon-white">关闭</button>
+        </div>
+      `;
+      
+      document.body.appendChild(stickerPanel);
+      
+      // 绑定贴纸点击事件
+      stickerPanel.querySelectorAll('.sticker-btn').forEach(btn => {
+        btn.onclick = () => {
+          const stickerType = btn.dataset.sticker;
+          addStickerToCanvas(stickerType);
+          stickerPanel.remove();
+        };
+      });
+      
+      // 点击外部关闭
+      setTimeout(() => {
+        const closeHandler = (e) => {
+          if (!stickerPanel.contains(e.target) && e.target !== document.getElementById('hbToolSticker')) {
+            stickerPanel.remove();
+            document.removeEventListener('click', closeHandler);
+          }
+        };
+        document.addEventListener('click', closeHandler);
+      }, 100);
+    }
+    
+    // 创建分支函数 - 新增
+    function createBranchFromChapter(e, index) {
+      if (e) e.stopPropagation();
+      
+      const originalChapter = AppState.currentProject.chapters[index];
+      const branchName = prompt('请输入分支名称（如：if线：假如主角没离开）：', 'if线：');
+      
+      if (branchName) {
+        // 创建新分支章节
+        const newBranch = {
+          title: originalChapter.title + '（分支）',
+          content: originalChapter.content,
+          wordCount: originalChapter.wordCount,
+          branchFrom: originalChapter.id,
+          branchName: branchName,
+          isMainLine: false,
+          children: [],
+          id: Date.now() + Math.floor(Math.random() * 1000)
+        };
+        
+        // 添加到章节列表
+        AppState.currentProject.chapters.push(newBranch);
+        
+        // 更新原章节的子分支
+        originalChapter.children.push(newBranch.id);
+        
+        saveCurrentAccount();
+        renderChapterList();
+        selectChapter(AppState.currentProject.chapters.length - 1);
+        showToast(`已创建分支：${branchName}`);
+      }
+    }
+
+    function addStickerToCanvas(stickerType) {
+      const canvas = document.createElement('canvas');
+      canvas.width = 100;
+      canvas.height = 100;
+      const ctx = canvas.getContext('2d');
+      
+      // 清空画布
+      ctx.clearRect(0, 0, 100, 100);
+      
+      // 绘制不同的贴纸
+      switch (stickerType) {
+        case 'star':
+          drawStar(ctx, 50, 50, 40, 5, 0.5);
+          break;
+        case 'heart':
+          drawHeart(ctx, 50, 50, 40);
+          break;
+        case 'flower':
+          drawFlower(ctx, 50, 50, 40);
+          break;
+        case 'smile':
+          drawSmileFace(ctx, 50, 50, 40);
+          break;
+        case 'moon':
+          drawMoon(ctx, 50, 50, 40);
+          break;
+      }
+      
+      // 转换为DataURL
+      const dataURL = canvas.toDataURL();
+      
+      // 添加到画布中央
+      const centerX = (hbCanvas.width - 100) / 2;
+      const centerY = (hbCanvas.height - 100) / 2;
+      
+      const img = new Image();
+      img.onload = () => {
+        handbookCtx.drawImage(img, centerX, centerY, 100, 100);
+        
+        // 存储贴纸对象
+        if (!AppState.currentHandbookPage.images) {
+          AppState.currentHandbookPage.images = [];
+        }
+        AppState.currentHandbookPage.images.push({
+          x: centerX,
+          y: centerY,
+          width: 100,
+          height: 100,
+          dataURL: dataURL,
+          type: 'sticker'
+        });
+        
+        // 保存当前画布状态
+        AppState.currentHandbookPage.canvasData = hbCanvas.toDataURL();
+        saveCurrentAccount();
+      };
+      img.src = dataURL;
+    }
+
+    function drawStar(ctx, cx, cy, outerRadius, spikes, innerRadiusRatio) {
+      const innerRadius = outerRadius * innerRadiusRatio;
+      let rot = Math.PI / 2 * 3;
+      let x = cx;
+      let y = cy;
+      const step = Math.PI / spikes;
+
+      ctx.beginPath();
+      ctx.moveTo(cx, cy - outerRadius);
+      
+      for (let i = 0; i < spikes; i++) {
+        x = cx + Math.cos(rot) * outerRadius;
+        y = cy + Math.sin(rot) * outerRadius;
+        ctx.lineTo(x, y);
+        rot += step;
+
+        x = cx + Math.cos(rot) * innerRadius;
+        y = cy + Math.sin(rot) * innerRadius;
+        ctx.lineTo(x, y);
+        rot += step;
+      }
+      
+      ctx.lineTo(cx, cy - outerRadius);
+      ctx.closePath();
+      ctx.fillStyle = '#FFD700';
+      ctx.fill();
+      ctx.strokeStyle = '#FFA500';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+    }
+
+    function drawHeart(ctx, cx, cy, size) {
+      ctx.beginPath();
+      const topCurveHeight = size * 0.3;
+      ctx.moveTo(cx, cy + size / 4);
+      // 左侧曲线
+      ctx.bezierCurveTo(
+        cx, cy - topCurveHeight,
+        cx - size / 2, cy - topCurveHeight,
+        cx - size / 2, cy + size / 4
+      );
+      // 底部曲线
+      ctx.bezierCurveTo(
+        cx - size / 2, cy + size / 2,
+        cx, cy + size,
+        cx, cy + size
+      );
+      // 右侧曲线
+      ctx.bezierCurveTo(
+        cx, cy + size,
+        cx + size / 2, cy + size / 2,
+        cx + size / 2, cy + size / 4
+      );
+      // 顶部右侧曲线
+      ctx.bezierCurveTo(
+        cx + size / 2, cy - topCurveHeight,
+        cx, cy - topCurveHeight,
+        cx, cy + size / 4
+      );
+      
+      ctx.closePath();
+      ctx.fillStyle = '#FF6B6B';
+      ctx.fill();
+      ctx.strokeStyle = '#FF4757';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+    }
+
+    function drawFlower(ctx, cx, cy, size) {
+      const petals = 6;
+      const petalLength = size / 2;
+      
+      ctx.fillStyle = '#FF9FF3';
+      ctx.strokeStyle = '#FD79A8';
+      ctx.lineWidth = 2;
+      
+      for (let i = 0; i < petals; i++) {
+        const angle = (i * 2 * Math.PI) / petals;
+        const x1 = cx + Math.cos(angle) * petalLength;
+        const y1 = cy + Math.sin(angle) * petalLength;
+        
+        ctx.beginPath();
+        ctx.ellipse(cx, cy, petalLength, petalLength / 2, angle, 0, 2 * Math.PI);
+        ctx.fill();
+        ctx.stroke();
+      }
+      
+      // 花蕊
+      ctx.beginPath();
+      ctx.arc(cx, cy, size / 6, 0, 2 * Math.PI);
+      ctx.fillStyle = '#FECA57';
+      ctx.fill();
+      ctx.strokeStyle = '#FF9FF3';
+      ctx.stroke();
+    }
+
+    function drawSmileFace(ctx, cx, cy, size) {
+      // 脸
+      ctx.beginPath();
+      ctx.arc(cx, cy, size / 2, 0, 2 * Math.PI);
+      ctx.fillStyle = '#FFEAA7';
+      ctx.fill();
+      ctx.strokeStyle = '#FDCB6E';
+      ctx.lineWidth = 3;
+      ctx.stroke();
+      
+      // 眼睛
+      ctx.beginPath();
+      ctx.arc(cx - size / 4, cy - size / 8, size / 10, 0, 2 * Math.PI);
+      ctx.arc(cx + size / 4, cy - size / 8, size / 10, 0, 2 * Math.PI);
+      ctx.fillStyle = '#2D3436';
+      ctx.fill();
+      
+      // 嘴巴
+      ctx.beginPath();
+      ctx.arc(cx, cy + size / 8, size / 4, 0.1 * Math.PI, 0.9 * Math.PI);
+      ctx.strokeStyle = '#2D3436';
+      ctx.lineWidth = 3;
+      ctx.stroke();
+    }
+
+    function drawMoon(ctx, cx, cy, size) {
+      ctx.beginPath();
+      ctx.arc(cx, cy, size / 2, 0.2 * Math.PI, 1.8 * Math.PI);
+      ctx.arc(cx - size / 4, cy, size / 3, 1.8 * Math.PI, 0.2 * Math.PI, true);
+      ctx.closePath();
+      ctx.fillStyle = '#F9F9F9';
+      ctx.fill();
+      ctx.strokeStyle = '#E0E0E0';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+    }
+
+    function exportData(format) {
+      if (format === 'txt') {
+        if (!AppState.currentProject) {
+          showToast('请先选择一个项目');
+          return;
+        }
+        const content = AppState.currentProject.chapters?.map(c => `${c.title}\n\n${c.content}`).join('\n\n---\n\n') || '';
+        downloadFile(`${AppState.currentProject.title}.txt`, content);
+      } else if (format === 'md') {
+        if (!AppState.currentProject) {
+          showToast('请先选择一个项目');
+          return;
+        }
+        const content = AppState.currentProject.chapters?.map(c => `# ${c.title}\n\n${c.content}`).join('\n\n---\n\n') || '';
+        downloadFile(`${AppState.currentProject.title}.md`, content);
+      } else if (format === 'json') {
+        const data = JSON.stringify(AppState.accounts[AppState.currentUser], null, 2);
+        downloadFile(`rainwindow_backup_${AppState.currentUser}_${new Date().toISOString().split('T')[0]}.json`, data);
+      }
+    }
+
+    function downloadFile(filename, content) {
+      const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast('导出成功');
+    }
+
+    function importBackup(file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const data = JSON.parse(e.target.result);
+          AppState.accounts[AppState.currentUser] = data;
+          saveAccounts();
+          // 重新加载
+          login(AppState.currentUser);
+          showToast('数据恢复成功');
+        } catch (err) {
+          showToast('文件格式错误');
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    // ==================== 初始化应用 ====================
+    function initApp() {
+      // 初始化雨滴
+      new RainSystem(document.getElementById('rainCanvas'));
+      
+      // 设置日期
+      updateDate();
+      
+      // 显示金句
+      const quote = AppState.dailyQuotes[Math.floor(Math.random() * AppState.dailyQuotes.length)];
+      document.querySelector('#dailyQuote p').textContent = quote;
+      setTimeout(() => document.getElementById('dailyQuote').style.opacity = '0', 8000);
+      
+      // 渲染数据
+      renderProjects();
+      renderNotes();
+      renderTodos();
+      renderDiaries();
+      renderQuotes();
+      renderCharacters();
+      
+      // 编辑器事件
+      const editor = document.getElementById('mainEditor');
+      let saveTimeout;
+      editor.addEventListener('input', () => {
+        updateWordCount();
+        clearTimeout(saveTimeout);
+        saveTimeout = setTimeout(() => {
+          if (AppState.currentChapter) {
+            AppState.currentChapter.content = editor.value;
+            saveCurrentAccount();
+          }
+        }, 1000);
+      });
+      
+      document.getElementById('chapterTitle').addEventListener('input', () => {
+        if (AppState.currentChapter) {
+          AppState.currentChapter.title = document.getElementById('chapterTitle').value;
+          renderChapterList();
+          clearTimeout(saveTimeout);
+          saveTimeout = setTimeout(saveCurrentAccount, 500);
+        }
+      });
+      
+      // 计时
+      AppState.writeStartTime = Date.now();
+      setInterval(() => {
+        const mins = Math.floor((Date.now() - AppState.writeStartTime) / 60000);
+        document.getElementById('writeTime').textContent = 
+          `${String(Math.floor(mins / 60)).padStart(2, '0')}:${String(mins % 60).padStart(2, '0')}`;
+        document.getElementById('menuTodayTime').textContent = mins;
+      }, 60000);
+      
+      // 绑定抽屉按钮
+      document.getElementById('menuBtn').onclick = () => openDrawer('mainMenuPanel');
+      document.getElementById('closeMainMenu').onclick = closeAllDrawers;
+      document.getElementById('atmosphereBtn').onclick = () => openDrawer('atmospherePanel');
+      document.getElementById('closeAtmosphere').onclick = closeAllDrawers;
+      document.getElementById('inspirationBtn').onclick = () => openDrawer('inspirationPanel');
+      document.getElementById('closeInspiration').onclick = closeAllDrawers;
+      document.getElementById('darkroomBtn').onclick = () => {
+        openDrawer('darkroomPanel');
+        renderProjects();
+      };
+      document.getElementById('closeDarkroom').onclick = closeAllDrawers;
+      document.getElementById('characterBtn').onclick = () => openDrawer('characterPanel');
+      document.getElementById('closeCharacter').onclick = closeAllDrawers;
+      document.getElementById('promptBtn').onclick = () => openDrawer('promptPanel');
+      document.getElementById('closePrompt').onclick = closeAllDrawers;
+      document.getElementById('exportBtn').onclick = () => openDrawer('exportPanel');
+      document.getElementById('closeExport').onclick = closeAllDrawers;
+      document.getElementById('todoBtn').onclick = () => openDrawer('todoPanel');
+      document.getElementById('closeTodo').onclick = closeAllDrawers;
+      
+      // 手账本
+      document.getElementById('handbookBtn').onclick = () => {
+        openDrawer('handbookPanel');
+        setTimeout(() => {
+          initHandbook();
+          initImportBackground();
+          // 确保初始化纸张类型
+          if (AppState.currentHandbookPage) {
+            document.getElementById('paperType').value = AppState.currentHandbookPage.paperType || '1';
+            loadHandbookBackground();
+          }
+          // 绑定纸张切换事件
+          document.getElementById('paperType').onchange = updatePaperType;
+        }, 100);
+      };
+      document.getElementById('closeHandbook').onclick = () => {
+        // 保存当前页面
+        if (AppState.currentHandbookPage) {
+          AppState.currentHandbookPage.text = document.getElementById('handbookText').value;
+          AppState.currentHandbookPage.canvasData = hbCanvas.toDataURL();
+          saveCurrentAccount();
+        }
+        closeAllDrawers();
+      };
+      
+      // 番茄钟
+      document.getElementById('pomodoroBtn').onclick = () => {
+        openDrawer('pomodoroPanel');
+        setTimeout(() => {
+          renderTaskList();
+          renderPomoCharts();
+        }, 100);
+      };
+      document.getElementById('closePomodoro').onclick = closeAllDrawers;
+      
+      // 市场分析
+      document.getElementById('marketBtn').onclick = () => openDrawer('marketPanel');
+      document.getElementById('closeMarket').onclick = closeAllDrawers;
+      document.getElementById('analyzeMarketBtn').onclick = analyzeMarketData;
+      document.getElementById('analyzeSummaryBtn').onclick = analyzeSummaryData;
+      
+      // 专注模式
+      document.getElementById('focusModeBtn').onclick = () => {
+        AppState.isFocusMode = !AppState.isFocusMode;
+        document.body.classList.toggle('focus-mode', AppState.isFocusMode);
+      };
+      
+      // 情绪选择
+      document.querySelectorAll('.mood-btn').forEach(btn => {
+        btn.onclick = () => {
+          document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('selected'));
+          btn.classList.add('selected');
+          AppState.currentMood = btn.dataset.mood;
+        };
+      });
+      
+      // 雨势调节
+      document.getElementById('rainIntensity').oninput = (e) => {
+        AppState.rainIntensity = parseInt(e.target.value);
+      };
+      
+      // 音乐控制
+      document.querySelectorAll('.music-btn').forEach(btn => {
+        btn.onclick = async () => {
+          const music = btn.dataset.music;
+          document.querySelectorAll('.music-btn .music-indicator').forEach(i => {
+            i.classList.remove('bg-rain-blue');
+            i.classList.add('bg-moon-white/30');
+          });
+          
+          if (musicSystem.currentMusic === music) {
+            musicSystem.stop();
+            document.getElementById('playIcon').classList.remove('hidden');
+            document.getElementById('pauseIcon').classList.add('hidden');
+          } else {
+            await musicSystem.play(music);
+            btn.querySelector('.music-indicator').classList.remove('bg-moon-white/30');
+            btn.querySelector('.music-indicator').classList.add('bg-rain-blue');
+            document.getElementById('playIcon').classList.add('hidden');
+            document.getElementById('pauseIcon').classList.remove('hidden');
+            document.getElementById('trackName').textContent = 
+              music === 'piano' ? '轻音乐' : music === 'rain' ? '雨声' : music === 'ocean' ? '海浪' : '鲸歌';
+          }
+        };
+      });
+      
+      document.getElementById('playPause').onclick = async () => {
+        if (musicSystem.currentMusic) {
+          musicSystem.stop();
+          document.getElementById('playIcon').classList.remove('hidden');
+          document.getElementById('pauseIcon').classList.add('hidden');
+        } else {
+          await musicSystem.play('piano');
+          document.getElementById('playIcon').classList.add('hidden');
+          document.getElementById('pauseIcon').classList.remove('hidden');
+        }
+      };
+      // 色温调节
+      document.getElementById('colorTemp').oninput = (e) => {
+        AppState.colorTemp = parseInt(e.target.value);
+        const temp = AppState.colorTemp;
+        let filter = '';
+        if (temp < 4500) {
+          filter = `sepia(${(4500 - temp) / 1800 * 0.3})`;
+        } else if (temp > 4500) {
+          filter = `hue-rotate(${(temp - 4500) / 2000 * 10}deg)`;
+        }
+        document.getElementById('backgroundLayer').style.filter = filter;
+      };
+      // 背景图片切换
+document.querySelectorAll('.bg-btn').forEach(btn => {
+    btn.onclick = () => {
+        const bg = btn.dataset.bg;
+        const bgLayer = document.getElementById('backgroundLayer');
+        
+        // 移除所有按钮的选中状态
+        document.querySelectorAll('.bg-btn').forEach(b => {
+            b.classList.remove('border-rain-blue');
+            b.classList.add('border-transparent');
+        });
+        btn.classList.remove('border-transparent');
+        btn.classList.add('border-rain-blue');
+        
+        const filenames = {
+            'city-neon': 'bg-city-neon.jpg',
+            'country-road': 'bg-country-road.jpg',
+            'misty-fog': 'bg-misty-fog.jpg',
+            'sakura-sweet': 'bg-sakura-sweet.jpg',
+            'scifi-tunnel': 'bg-scifi-tunnel.jpg',
+            'forest': 'bg-forest.jpg',
+            'ocean': 'bg-ocean.jpg',
+            'library': 'bg-library.jpg'
+        };
+        
+        if (bg === 'none') {
+            bgLayer.style.backgroundImage = 'linear-gradient(180deg, #1a3a5c 0%, #0d2137 50%, #061220 100%)';
+            AppState.currentBg = 'none';
+        } else {
+            const filename = filenames[bg];
+            if (filename) {
+                bgLayer.style.backgroundImage = `url('${filename}')`;
+                bgLayer.style.backgroundSize = 'cover';
+                bgLayer.style.backgroundPosition = 'center';
+                AppState.currentBg = bg;
+            } else {
+                // 如果映射里没有这个背景，就当作默认处理
+                bgLayer.style.backgroundImage = 'linear-gradient(180deg, #1a3a5c 0%, #0d2137 50%, #061220 100%)';
+                AppState.currentBg = 'none';
+            }
+        }
+        saveCurrentAccount();
+        showToast(`已切换到背景 ${bg === 'none' ? '无' : bg}`);
+    };
+});
+      // 自定义背景上传
+const uploadBgBtn = document.getElementById('uploadBgBtn');
+const customBgInput = document.getElementById('customBgInput');
+
+uploadBgBtn.addEventListener('click', () => {
+  customBgInput.click();
+});
+
+customBgInput.addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (file && file.type.startsWith('image/')) {
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const dataURL = event.target.result;
+      // 设置背景
+      document.getElementById('backgroundLayer').style.backgroundImage = `url('${dataURL}')`;
+      document.getElementById('backgroundLayer').style.backgroundSize = 'cover';
+      document.getElementById('backgroundLayer').style.backgroundPosition = 'center';
+      // 保存到 AppState 里（可选）
+      AppState.customBg = dataURL;
+      saveCurrentAccount();
+      showToast('背景已更新');
+    };
+    reader.readAsDataURL(file);
+  }
+});
+      // 加载保存的背景设置
+if (AppState.currentBg) {
+    const bgLayer = document.getElementById('backgroundLayer');
+    if (AppState.currentBg === 'none') {
+        bgLayer.style.backgroundImage = 'linear-gradient(180deg, #1a3a5c 0%, #0d2137 50%, #061220 100%)';
+    } else {
+        const filenames = {
+            'city-neon': 'bg-city-neon.jpg',
+            'country-road': 'bg-country-road.jpg',
+            'misty-fog': 'bg-misty-fog.jpg',
+            'sakura-sweet': 'bg-sakura-sweet.jpg',
+            'scifi-tunnel': 'bg-scifi-tunnel.jpg',
+            'forest': 'bg-forest.jpg',
+            'ocean': 'bg-ocean.jpg',
+            'library': 'bg-library.jpg'
+        };
+       bgLayer.style.backgroundImage = `url('${filenames[AppState.currentBg]}')`;
+        bgLayer.style.backgroundSize = 'cover';
+        bgLayer.style.backgroundPosition = 'center';
+    }
+}
+      
+      // 菜单项
+      document.querySelectorAll('.menu-item').forEach(item => {
+        item.onclick = () => {
+          closeAllDrawers();
+          const panel = item.dataset.panel;
+          if (panel === 'diary') {
+            openDrawer('diaryPanel');
+            renderDiaries();
+          }
+          if (panel === 'quotes') {
+            openDrawer('quotesPanel');
+            renderQuotes();
+          }
+          if (panel === 'backup') {
+            openDrawer('backupPanel');
+          }
+          if (panel === 'logout') location.reload();
+        };
+      });
+      
+      // 保存按钮
+      document.getElementById('saveBtn').onclick = () => {
+        if (AppState.currentChapter) {
+          AppState.currentChapter.content = document.getElementById('mainEditor').value;
+          AppState.currentChapter.title = document.getElementById('chapterTitle').value;
+          if (AppState.currentProject) {
+            AppState.currentProject.lastEdited = new Date().toISOString();
+          }
+          saveCurrentAccount();
+          showToast('已保存');
+        }
+      };
+      
+      // 新建项目
+      document.getElementById('newProjectBtn').onclick = () => {
+        document.getElementById('newProjectModal').classList.add('active');
+      };
+      
+      // 添加章节
+      document.getElementById('addChapterBtn').onclick = () => {
+        if (!AppState.currentProject) {
+          showToast('请先选择或创建一个项目');
+          return;
+        }
+        const chapterNum = (AppState.currentProject.chapters?.length || 0) + 1;
+        const newChapter = {
+          id: Date.now(),
+          title: `第${chapterNum}章`,
+          content: ''
+        };
+        if (!AppState.currentProject.chapters) AppState.currentProject.chapters = [];
+        AppState.currentProject.chapters.push(newChapter);
+        saveCurrentAccount();
+        renderChapterList();
+        selectChapter(AppState.currentProject.chapters.length - 1);
+        showToast('章节已添加');
+      };
+      
+      // 日记心情选择
+      document.querySelectorAll('.diary-mood').forEach(btn => {
+        btn.onclick = () => {
+          document.querySelectorAll('.diary-mood').forEach(b => b.classList.remove('selected'));
+          btn.classList.add('selected');
+          selectedMood = parseInt(btn.dataset.mood);
+        };
+      });
+      
+      // 保存日记
+      document.getElementById('saveDiaryBtn').onclick = () => {
+        const content = document.getElementById('diaryContent').value.trim();
+        if (!content) {
+          showToast('请输入内容');
+          return;
+        }
+        AppState.diaries.push({
+          id: Date.now(),
+          mood: selectedMood,
+          content,
+          date: new Date().toISOString()
+        });
+        saveCurrentAccount();
+        document.getElementById('diaryContent').value = '';
+        renderDiaries();
+        showToast('日记已保存');
+      };
+      
+      // 便签标签选择
+      document.querySelectorAll('.tag-btn').forEach(btn => {
+        btn.onclick = () => {
+          document.querySelectorAll('.tag-btn').forEach(b => {
+            b.classList.remove('bg-rain-blue/40', 'border-rain-blue');
+            b.classList.add('bg-rain-blue/20');
+          });
+          btn.classList.remove('bg-rain-blue/20');
+          btn.classList.add('bg-rain-blue/40', 'border-rain-blue');
+          selectedNoteTag = btn.dataset.tag;
+        };
+      });
+      
+      // 添加便签
+      document.getElementById('addNoteBtn').onclick = () => {
+        const content = document.getElementById('newNoteContent').value.trim();
+        if (!content) {
+          showToast('请输入内容');
+          return;
+        }
+        AppState.notes.push({
+          id: Date.now(),
+          content,
+          tag: selectedNoteTag,
+          date: new Date().toISOString()
+        });
+        saveCurrentAccount();
+        document.getElementById('newNoteContent').value = '';
+        renderNotes();
+        showToast('便签已添加');
+      };
+      
+      // 添加待办
+      document.getElementById('addTodoBtn').onclick = () => {
+        const input = document.getElementById('newTodoInput');
+        const content = input.value.trim();
+        if (!content) return;
+        AppState.todos.push({
+          id: Date.now(),
+          content,
+          completed: false
+        });
+        saveCurrentAccount();
+        input.value = '';
+        renderTodos();
+      };
+      
+      // 添加金句
+      document.getElementById('addQuoteBtn').onclick = () => {
+        const content = document.getElementById('newQuoteInput').value.trim();
+        const author = document.getElementById('newQuoteAuthor').value.trim();
+        if (!content) {
+          showToast('请输入金句');
+          return;
+        }
+        AppState.quotes.push({
+          id: Date.now(),
+          content,
+          author: author || '未知',
+          date: new Date().toISOString()
+        });
+        saveCurrentAccount();
+        document.getElementById('newQuoteInput').value = '';
+        document.getElementById('newQuoteAuthor').value = '';
+        renderQuotes();
+        showToast('金句已收藏');
+      };
+      
+      // 添加角色
+      document.getElementById('addCharacterBtn').onclick = () => {
+        document.getElementById('newCharacterModal').classList.add('active');
+      };
+      
+      // 番茄钟任务添加
+      document.getElementById('addTaskBtn').onclick = () => {
+        const input = document.getElementById('newTaskInput');
+        const name = input.value.trim();
+        if (!name) return;
+        const colors = ['#9D2933', '#F3C13A', '#1E3A5F', '#9D6656', '#5E8B6E', '#B8A1C9'];
+        AppState.pomodoro.tasks.push({
+          id: Date.now(),
+          name,
+          color: colors[AppState.pomodoro.tasks.length % colors.length],
+          totalTime: 0
+        });
+        saveCurrentAccount();
+        input.value = '';
+        renderTaskList();
+      };
+      
+      // 番茄钟控制
+      document.getElementById('pomoStart').onclick = startPomodoro;
+      document.getElementById('pomoPause').onclick = pausePomodoro;
+      document.getElementById('pomoStop').onclick = stopPomodoro;
+      
+      // 番茄钟时间模式
+      document.querySelectorAll('.pomo-mode').forEach(btn => {
+        btn.onclick = () => {
+          document.querySelectorAll('.pomo-mode').forEach(b => {
+            b.classList.remove('bg-yanzhi/30', 'text-white', 'border-yanzhi');
+            b.classList.add('text-moon-white/60');
+          });
+          btn.classList.remove('text-moon-white/60');
+          btn.classList.add('bg-yanzhi/30', 'text-white', 'border-yanzhi');
+          pomoMode = parseInt(btn.dataset.time);
+          if (!pomoIsRunning) {
+            pomoTimeLeft = pomoMode * 60;
+            updatePomoDisplay();
+          }
+        };
+      });
+      
+      // 手账本工具
+      document.getElementById('hbToolPen').onclick = () => {
+        currentTool = 'pen';
+        document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('btn-active'));
+        document.getElementById('hbToolPen').classList.add('btn-active');
+      };
+      document.getElementById('hbToolText').onclick = () => {
+        currentTool = 'text';
+        document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('btn-active'));
+        document.getElementById('hbToolText').classList.add('btn-active');
+        document.getElementById('handbookText').focus();
+      };
+      document.getElementById('hbClear').onclick = () => {
+        handbookCtx.clearRect(0, 0, hbCanvas.width, hbCanvas.height);
+      };
+      document.getElementById('hbSave').onclick = () => {
+        if (AppState.currentHandbookPage) {
+          AppState.currentHandbookPage.text = document.getElementById('handbookText').value;
+          AppState.currentHandbookPage.canvasData = hbCanvas.toDataURL();
+          saveCurrentAccount();
+          showToast('手账已保存');
+        }
+      };
+      document.getElementById('paperType').onchange = updatePaperType;
+      document.getElementById('newHandbookPage').onclick = () => {
+        // 保存当前
+        if (AppState.currentHandbookPage) {
+          AppState.currentHandbookPage.text = document.getElementById('handbookText').value;
+          AppState.currentHandbookPage.canvasData = hbCanvas.toDataURL();
+        }
+        // 新建
+        const newPage = {
+          id: Date.now(),
+          date: new Date().toISOString(),
+          text: '',
+          canvasData: null,
+          paperType: document.getElementById('paperType').value,
+          images: []
+        };
+        AppState.handbook.push(newPage);
+        AppState.currentHandbookPage = newPage;
+        document.getElementById('handbookText').value = '';
+        handbookCtx.clearRect(0, 0, hbCanvas.width, hbCanvas.height);
+        saveCurrentAccount();
+        renderHandbookList();
+        showToast('新页面已创建');
+      };
+      
+      // 写作提示
+      let currentPromptType = 'plot';
+      document.querySelectorAll('.prompt-tab').forEach(btn => {
+        btn.onclick = () => {
+          document.querySelectorAll('.prompt-tab').forEach(b => {
+            b.classList.remove('bg-rain-blue/20', 'text-rain-blue', 'border-rain-blue/30');
+            b.classList.add('text-moon-white/60');
+          });
+          btn.classList.remove('text-moon-white/60');
+          btn.classList.add('bg-rain-blue/20', 'text-rain-blue', 'border-rain-blue/30');
+          currentPromptType = btn.dataset.type;
+        };
+      });
+      document.getElementById('generatePrompt').onclick = () => {
+        const prompts = AppState.writingPrompts[currentPromptType];
+        const prompt = prompts[Math.floor(Math.random() * prompts.length)];
+        document.getElementById('promptContent').textContent = prompt;
+      };
+      
+      // 导出
+      document.querySelectorAll('.export-btn').forEach(btn => {
+        btn.onclick = () => exportData(btn.dataset.format);
+      });
+      
+      // 备份
+      document.getElementById('exportBackupBtn').onclick = () => exportData('json');
+      document.getElementById('importBackupInput').onchange = (e) => {
+        if (e.target.files[0]) {
+          importBackup(e.target.files[0]);
+        }
+      };
+      
+      // 遮罩点击
+      document.getElementById('overlay').onclick = closeAllDrawers;
+      
+      // 快捷键
+      document.addEventListener('keydown', (e) => {
+        if (e.ctrlKey || e.metaKey) {
+          if (e.key === 's') {
+            e.preventDefault();
+            document.getElementById('saveBtn').click();
+          }
+          if (e.key === 'f') {
+            e.preventDefault();
+            document.getElementById('focusModeBtn').click();
+          }
+        }
+        if (e.key === 'Escape' && AppState.isFocusMode) {
+          exitFocusMode();
+        }
+      });
+      
+      // 自动加载默认项目
+      if (AppState.projects.length > 0) {
+        openProject(AppState.projects[0].id);
+      }
+      // ==================== 情绪天气站 ====================
+function loadMoodForToday() {
+  const today = new Date().toISOString().slice(0, 10);
+  const existing = AppState.moodHistory.find(m => m.date === today);
+  if (existing) {
+    AppState.todayMood = existing.mood;
+    updateWeatherDisplay(existing.mood);
+  } else {
+    openMoodPicker();
+  }
+}
+
+function openMoodPicker() {
+  const modal = document.getElementById('moodPickerModal');
+  modal.classList.add('active');
+  let selectedMood = null;
+  
+  document.querySelectorAll('.mood-option').forEach(btn => {
+    btn.onclick = () => {
+      document.querySelectorAll('.mood-option').forEach(b => b.classList.remove('bg-white/20'));
+      btn.classList.add('bg-white/20');
+      selectedMood = btn.dataset.mood;
+    };
+  });
+  
+  const confirmBtn = document.getElementById('confirmMoodBtn');
+  confirmBtn.onclick = () => {
+    if (!selectedMood) {
+      showToast('请选择一种天气');
+      return;
+    }
+    const today = new Date().toISOString().slice(0, 10);
+    AppState.moodHistory = AppState.moodHistory.filter(m => m.date !== today);
+    AppState.moodHistory.push({ date: today, mood: selectedMood });
+    AppState.todayMood = selectedMood;
+    saveCurrentAccount();
+    updateWeatherDisplay(selectedMood);
+    modal.classList.remove('active');
+    showToast(`已记录今天的心情：${moodData[selectedMood].name}`);
+  };
+}
+
+function updateWeatherDisplay(moodKey) {
+  const data = moodData[moodKey];
+  if (!data) return;
+  document.getElementById('weatherDisplay').innerHTML = `${data.emoji} ${data.name}`;
+  const quotes = data.quotes;
+  const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+  document.getElementById('weatherQuote').innerHTML = `“${randomQuote}”`;
+  document.getElementById('weatherTheme').innerHTML = data.theme;
+  document.getElementById('weatherStation').classList.remove('hidden');
+}
+
+document.getElementById('editWeatherBtn').onclick = () => {
+  openMoodPicker();
+};
+
+loadMoodForToday();
+
+    }
+
+    // 启动
+    document.addEventListener('DOMContentLoaded', () => {
+      // 加载已有账号
+      const saved = localStorage.getItem('rainWindow_accounts');
+      if (saved) {
+        AppState.accounts = JSON.parse(saved);
+      }
+      
+      playSplashAnimation();
+      initLogin();
+    });
+  </script>
+  <!-- 心情选择弹窗 -->
+<div id="moodPickerModal" class="modal">
+  <div class="modal-content">
+    <h3 class="text-moon-white font-serif text-lg mb-4">今天你的内心天气是？</h3>
+    <div class="grid grid-cols-3 gap-3 mb-4">
+      <button class="mood-option text-2xl p-2 rounded-lg bg-white/5 hover:bg-white/10" data-mood="sunny">☀️ 晴天</button>
+      <button class="mood-option text-2xl p-2 rounded-lg bg-white/5 hover:bg-white/10" data-mood="cloudy">⛅ 多云</button>
+      <button class="mood-option text-2xl p-2 rounded-lg bg-white/5 hover:bg-white/10" data-mood="light-rain">🌦️ 小雨</button>
+      <button class="mood-option text-2xl p-2 rounded-lg bg-white/5 hover:bg-white/10" data-mood="heavy-rain">⛈️ 暴雨</button>
+      <button class="mood-option text-2xl p-2 rounded-lg bg-white/5 hover:bg-white/10" data-mood="fog">🌫️ 雾</button>
+      <button class="mood-option text-2xl p-2 rounded-lg bg-white/5 hover:bg-white/10" data-mood="snow">❄️ 雪</button>
+      <button class="mood-option text-2xl p-2 rounded-lg bg-white/5 hover:bg-white/10" data-mood="rainbow">🌈 彩虹</button>
+    </div>
+    <div class="flex gap-2">
+      <button onclick="closeModal('moodPickerModal')" class="flex-1 glass-input rounded-lg py-2 text-sm text-moon-white/70 hover:text-moon-white">取消</button>
+      <button id="confirmMoodBtn" class="flex-1 bg-rain-blue/80 hover:bg-rain-blue rounded-lg py-2 text-sm text-white">确认</button>
+    </div>
+  </div>
+</div>
+</body>
+</html>
