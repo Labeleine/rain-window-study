@@ -353,15 +353,7 @@
       .project-card { width: 80vw !important; flex-shrink: 0; }
     }
   </style>
-  <script type="module">
-  import { initCursorEffects } from '/src/js/cursor.js';
-  import { initTypingEffects } from '/src/js/typing.js';
   
-  document.addEventListener('DOMContentLoaded', () => {
-    initCursorEffects();
-    initTypingEffects();
-  });
-</script>
 </head>
 <body>
 
@@ -3392,6 +3384,195 @@ function initApp() {
   }
   document.getElementById('editWeatherBtn').onclick = openMoodPicker;
 }
+// ==================== 光标特效 ====================
+(function initCursorEffects() {
+  const canvas = document.createElement('canvas');
+  canvas.id = 'cursorCanvas';
+  canvas.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999;';
+  document.body.appendChild(canvas);
+
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  window.addEventListener('resize', () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  });
+
+  let mouseX = -1000, mouseY = -1000;
+  let isMoving = false;
+  let moveTimeout;
+
+  document.addEventListener('mousemove', (e) => {
+    mouseX = e.clientX; mouseY = e.clientY; isMoving = true;
+    clearTimeout(moveTimeout);
+    moveTimeout = setTimeout(() => { isMoving = false; }, 100);
+  });
+
+  const swirlParticles = [];
+  const trailParticles = [];
+
+  class SwirlParticle {
+    constructor(x, y) {
+      this.x = x; this.y = y;
+      this.angle = Math.random() * Math.PI * 2;
+      this.radius = 3 + Math.random() * 9;
+      this.speed = 0.02 + Math.random() * 0.03;
+      this.size = 1 + Math.random() * 2;
+      this.opacity = 0.6 + Math.random() * 0.4;
+    }
+    update(cx, cy) {
+      this.angle += this.speed;
+      this.radius += 0.2;
+      this.opacity -= 0.01;
+      this.x = cx + Math.cos(this.angle) * this.radius;
+      this.y = cy + Math.sin(this.angle) * this.radius;
+    }
+    draw(ctx) {
+      if (this.opacity <= 0) return;
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(150, 200, 255, ${this.opacity})`;
+      ctx.fill();
+    }
+  }
+
+  class TrailParticle {
+    constructor(x, y) {
+      this.x = x; this.y = y;
+      this.life = 1;
+      this.size = 3 + Math.random() * 3;
+    }
+    update() {
+      this.life -= 0.05;
+      this.size *= 0.95;
+    }
+    draw(ctx) {
+      if (this.life <= 0) return;
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(200, 230, 255, ${this.life * 0.5})`;
+      ctx.fill();
+    }
+  }
+
+  function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    if (!isMoving && mouseX > 0) {
+      for (let i = 0; i < 1; i++) swirlParticles.push(new SwirlParticle(mouseX, mouseY));
+    }
+    if (isMoving) {
+      for (let i = 0; i < 2; i++) trailParticles.push(new TrailParticle(mouseX + (Math.random()-0.5)*10, mouseY + (Math.random()-0.5)*10));
+    }
+    for (let i = swirlParticles.length - 1; i >= 0; i--) {
+      swirlParticles[i].update(mouseX, mouseY);
+      swirlParticles[i].draw(ctx);
+      if (swirlParticles[i].opacity <= 0) swirlParticles.splice(i, 1);
+    }
+    for (let i = trailParticles.length - 1; i >= 0; i--) {
+      trailParticles[i].update();
+      trailParticles[i].draw(ctx);
+      if (trailParticles[i].life <= 0) trailParticles.splice(i, 1);
+    }
+    if (mouseX > 0) {
+      ctx.beginPath(); ctx.arc(mouseX, mouseY, 2, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(200, 230, 255, 0.8)';
+      ctx.shadowColor = 'rgba(150, 200, 255, 0.8)'; ctx.shadowBlur = 8;
+      ctx.fill(); ctx.shadowBlur = 0;
+    }
+    requestAnimationFrame(animate);
+  }
+  animate();
+  console.log('✅ 光标光漩涡已启用');
+})();
+
+// ==================== 打字特效 ====================
+(function initTypingEffects() {
+  const editor = document.getElementById('mainEditor');
+  if (!editor) return;
+
+  const canvas = document.createElement('canvas');
+  canvas.id = 'typingCanvas';
+  canvas.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:999;';
+  
+  const container = editor.parentElement;
+  container.style.position = 'relative';
+  container.appendChild(canvas);
+
+  const ctx = canvas.getContext('2d');
+  let particles = [];
+
+  function resize() {
+    const rect = container.getBoundingClientRect();
+    if (rect.width > 0 && rect.height > 0) {
+      canvas.width = rect.width; canvas.height = rect.height;
+    }
+  }
+  resize(); window.addEventListener('resize', resize);
+  setTimeout(resize, 500);
+
+  class Particle {
+    constructor(x, y) {
+      this.x = x + (Math.random() - 0.5) * 20;
+      this.y = y + (Math.random() - 0.5) * 10;
+      this.life = 1;
+      this.decay = 0.015 + Math.random() * 0.015;
+      this.vx = (Math.random() - 0.5) * 3;
+      this.vy = -Math.random() * 4 - 2;
+      this.size = Math.random() * 4 + 2;
+      this.hue = 200 + Math.random() * 40;
+    }
+    update() {
+      this.x += this.vx; this.y += this.vy;
+      this.vy += 0.08; this.life -= this.decay;
+      this.size *= 0.98;
+    }
+    draw(ctx) {
+      if (this.life <= 0 || this.size <= 0.5) return;
+      const alpha = this.life;
+      ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+      ctx.fillStyle = `hsla(${this.hue}, 80%, 90%, ${alpha})`;
+      ctx.fill();
+      const gradient = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.size * 3);
+      gradient.addColorStop(0, `hsla(${this.hue}, 80%, 90%, ${alpha * 0.5})`);
+      gradient.addColorStop(1, `hsla(${this.hue}, 80%, 90%, 0)`);
+      ctx.beginPath(); ctx.arc(this.x, this.y, this.size * 3, 0, Math.PI * 2);
+      ctx.fillStyle = gradient; ctx.fill();
+    }
+  }
+
+  function createParticles(x, y) {
+    if (x <= 0 || y <= 0 || x > canvas.width || y > canvas.height) return;
+    const count = 5 + Math.floor(Math.random() * 5);
+    for (let i = 0; i < count; i++) particles.push(new Particle(x, y));
+  }
+
+  function getCursorPosition() {
+    const cursorPos = editor.selectionStart;
+    const text = editor.value.substring(0, cursorPos);
+    const lines = text.split('\n');
+    const currentLine = lines[lines.length - 1];
+    const lineHeight = 28, charWidth = 18;
+    let x = currentLine.length * charWidth + 20;
+    let y = (lines.length - 1) * lineHeight + 30;
+    x = Math.min(x, canvas.width - 10); y = Math.min(y, canvas.height - 10);
+    return { x, y };
+  }
+
+  editor.addEventListener('input', () => {
+    const pos = getCursorPosition();
+    createParticles(pos.x, pos.y);
+  });
+
+  function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    particles = particles.filter(p => { p.update(); p.draw(ctx); return p.life > 0; });
+    requestAnimationFrame(animate);
+  }
+  animate();
+  console.log('✅ 雨随文动已启用（增强版）');
+})();
 
 // ==================== 启动 ====================
 document.addEventListener('DOMContentLoaded', () => {
