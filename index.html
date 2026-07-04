@@ -353,6 +353,15 @@
       .project-card { width: 80vw !important; flex-shrink: 0; }
     }
   </style>
+  <script type="module">
+  import { initCursorEffects } from '/src/js/cursor.js';
+  import { initTypingEffects } from '/src/js/typing.js';
+  
+  document.addEventListener('DOMContentLoaded', () => {
+    initCursorEffects();
+    initTypingEffects();
+  });
+</script>
 </head>
 <body>
 
