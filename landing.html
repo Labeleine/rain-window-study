@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>雨窗阁 | Rain Window Study — 作品展示</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700&family=ZCOOL+XiaoWei&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { 
+      width: 100%; 
+      height: 100%; 
+      overflow: hidden; 
+      background: #0a0f1a; 
+      font-family: 'Noto Serif SC', serif;
+      color: #e2e8f0;
+    }
+
+    /* ====== 第一层：外景（雨夜） ====== */
+    #layer-outside {
+      position: fixed; inset: 0;
+      background: linear-gradient(180deg, #050814 0%, #0a0e1a 40%, #0f1525 100%);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      z-index: 100; transition: opacity 1.2s ease, transform 1.2s ease;
+    }
+    #layer-outside.hidden { opacity: 0; pointer-events: none; transform: scale(1.1); }
+
+    .rain-canvas { position: absolute; inset: 0; pointer-events: none; }
+
+    .attic-silhouette {
+      position: absolute; bottom: 15%; left: 50%; transform: translateX(-50%);
+      width: 280px; height: 200px;
+    }
+    .attic-silhouette svg { width: 100%; height: 100%; }
+
+    .outside-text {
+      position: relative; z-index: 10;
+      text-align: center; margin-top: -60px;
+    }
+    .outside-text h1 {
+      font-family: 'ZCOOL XiaoWei', serif;
+      font-size: 2.4rem; letter-spacing: 0.2em;
+      color: rgba(226,232,240,0.9);
+      text-shadow: 0 0 40px rgba(56,189,248,0.3);
+      margin-bottom: 12px;
+    }
+    .outside-text p {
+      font-size: 0.9rem; color: rgba(226,232,240,0.5);
+      letter-spacing: 0.15em; font-style: italic;
+    }
+
+    .attic-door {
+      position: relative; z-index: 20;
+      margin-top: 40px; cursor: pointer;
+      transition: transform 0.4s ease;
+    }
+    .attic-door:hover { transform: scale(1.05); }
+    .attic-door svg { width: 80px; height: 120px; }
+    .door-hint {
+      margin-top: 12px; font-size: 0.75rem;
+      color: rgba(226,232,240,0.4);
+      letter-spacing: 0.1em; animation: pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 0.4; }
+      50% { opacity: 0.8; }
+    }
+
+    /* ====== 第二层：玄关（简介） ====== */
+    #layer-foyer {
+      position: fixed; inset: 0;
+      background: linear-gradient(180deg, #0d1a2d 0%, #0a0f1a 60%, #0f1525 100%);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      z-index: 90; opacity: 0; pointer-events: none;
+      transition: opacity 1s ease;
+      padding: 40px 24px;
+    }
+    #layer-foyer.active { opacity: 1; pointer-events: auto; }
+
+    .foyer-content {
+      max-width: 600px; text-align: center;
+      position: relative; z-index: 10;
+    }
+    .foyer-content h2 {
+      font-family: 'ZCOOL XiaoWei', serif;
+      font-size: 2rem; margin-bottom: 20px;
+      color: #e2e8f0; letter-spacing: 0.1em;
+    }
+    .foyer-content .role-tag {
+      display: inline-block;
+      background: rgba(56,189,248,0.15);
+      border: 1px solid rgba(56,189,248,0.3);
+      border-radius: 20px; padding: 6px 16px;
+      font-size: 0.8rem; color: #38bdf8;
+      margin-bottom: 24px; letter-spacing: 0.05em;
+    }
+    .foyer-content p {
+      font-size: 0.95rem; line-height: 2;
+      color: rgba(226,232,240,0.7);
+      margin-bottom: 16px;
+    }
+    .foyer-content .highlight {
+      color: #F3C13A; font-weight: 500;
+    }
+
+    .demo-gif {
+      width: 100%; max-width: 480px;
+      height: 270px; margin: 24px auto;
+      background: rgba(15,23,42,0.6);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px; overflow: hidden;
+      position: relative;
+    }
+    .demo-gif-placeholder {
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      color: rgba(226,232,240,0.3); font-size: 0.85rem;
+    }
+
+    .continue-btn {
+      margin-top: 32px; padding: 12px 36px;
+      background: rgba(243,193,58,0.15);
+      border: 1px solid rgba(243,193,58,0.4);
+      border-radius: 30px; color: #F3C13A;
+      font-family: 'Noto Serif SC', serif;
+      font-size: 0.9rem; letter-spacing: 0.1em;
+      cursor: pointer; transition: all 0.3s ease;
+    }
+    .continue-btn:hover {
+      background: rgba(243,193,58,0.25);
+      transform: scale(1.03);
+    }
+
+    /* ====== 第三层：主厅（功能展示） ====== */
+    #layer-hall {
+      position: fixed; inset: 0;
+      background: #0a0f1a;
+      overflow-y: auto; overflow-x: hidden;
+      z-index: 80; opacity: 0; pointer-events: none;
+      transition: opacity 1s ease;
+    }
+    #layer-hall.active { opacity: 1; pointer-events: auto; }
+
+    .hall-header {
+      text-align: center; padding: 48px 24px 32px;
+      background: linear-gradient(180deg, #0d1a2d 0%, #0a0f1a 100%);
+    }
+    .hall-header h2 {
+      font-family: 'ZCOOL XiaoWei', serif;
+      font-size: 1.8rem; color: #e2e8f0;
+      letter-spacing: 0.15em; margin-bottom: 8px;
+    }
+    .hall-header p {
+      font-size: 0.85rem; color: rgba(226,232,240,0.4);
+    }
+
+    .screenshots-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px; max-width: 900px;
+      margin: 0 auto; padding: 0 24px 40px;
+    }
+    .screenshot-card {
+      background: rgba(15,23,42,0.5);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px; overflow: hidden;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .screenshot-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 32px rgba(56,189,248,0.1);
+    }
+    .screenshot-img {
+      width: 100%; height: 160px;
+      background: linear-gradient(135deg, #1a3a5c, #0d2137);
+      display: flex; align-items: center; justify-content: center;
+      color: rgba(226,232,240,0.3); font-size: 0.8rem;
+    }
+    .screenshot-info {
+      padding: 14px 16px;
+    }
+    .screenshot-info h4 {
+      font-size: 0.9rem; color: #e2e8f0;
+      margin-bottom: 4px;
+    }
+    .screenshot-info p {
+      font-size: 0.75rem; color: rgba(226,232,240,0.5);
+      line-height: 1.5;
+    }
+
+    .floor-roadmap {
+      max-width: 700px; margin: 0 auto 40px;
+      padding: 0 24px;
+    }
+    .floor-roadmap h3 {
+      font-family: 'ZCOOL XiaoWei', serif;
+      font-size: 1.2rem; color: #e2e8f0;
+      text-align: center; margin-bottom: 24px;
+      letter-spacing: 0.1em;
+    }
+    .floor {
+      display: flex; align-items: center;
+      gap: 16px; margin-bottom: 16px;
+      padding: 16px; border-radius: 10px;
+      transition: background 0.3s ease;
+    }
+    .floor:hover { background: rgba(255,255,255,0.03); }
+    .floor-number {
+      width: 36px; height: 36px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.8rem; font-weight: 600; flex-shrink: 0;
+    }
+    .floor-number.completed {
+      background: rgba(243,193,58,0.2); color: #F3C13A;
+      border: 1px solid rgba(243,193,58,0.3);
+    }
+    .floor-number.planned {
+      background: rgba(30,58,95,0.3); color: rgba(226,232,240,0.5);
+      border: 1px solid rgba(30,58,95,0.5);
+    }
+    .floor-info h4 {
+      font-size: 0.85rem; color: #e2e8f0;
+      margin-bottom: 2px;
+    }
+    .floor-info p {
+      font-size: 0.75rem; color: rgba(226,232,240,0.4);
+    }
+    .floor-status {
+      margin-left: auto; font-size: 0.7rem;
+      padding: 3px 10px; border-radius: 10px;
+    }
+    .floor-status.completed {
+      background: rgba(243,193,58,0.15); color: #F3C13A;
+    }
+    .floor-status.planned {
+      background: rgba(30,58,95,0.2); color: rgba(226,232,240,0.4);
+    }
+
+    .cta-section {
+      text-align: center; padding: 48px 24px;
+      background: linear-gradient(180deg, #0a0f1a 0%, #0d1a2d 100%);
+    }
+    .cta-section h3 {
+      font-family: 'ZCOOL XiaoWei', serif;
+      font-size: 1.4rem; color: #e2e8f0;
+      margin-bottom: 16px; letter-spacing: 0.1em;
+    }
+    .cta-btn {
+      display: inline-block; padding: 14px 40px;
+      background: linear-gradient(135deg, #38bdf8, #818cf8);
+      border: none; border-radius: 30px;
+      color: #fff; font-family: 'Noto Serif SC', serif;
+      font-size: 0.95rem; letter-spacing: 0.1em;
+      text-decoration: none; cursor: pointer;
+      transition: all 0.3s ease; box-shadow: 0 4px 20px rgba(56,189,248,0.3);
+    }
+    .cta-btn:hover {
+      transform: scale(1.03);
+      box-shadow: 0 6px 30px rgba(56,189,248,0.4);
+    }
+
+    .footer {
+      text-align: center; padding: 24px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+    .footer .name {
+      font-size: 0.85rem; color: #e2e8f0; margin-bottom: 4px;
+    }
+    .footer .role {
+      font-size: 0.75rem; color: rgba(226,232,240,0.4);
+    }
+
+    /* 粒子效果 */
+    .particle {
+      position: fixed; border-radius: 50%;
+      pointer-events: none; z-index: 5;
+      background: rgba(200, 220, 255, 0.3);
+    }
+
+    /* 响应式 */
+    @media (max-width: 600px) {
+      .outside-text h1 { font-size: 1.6rem; }
+      .foyer-content h2 { font-size: 1.5rem; }
+      .screenshots-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ====== 第一层：外景（雨夜） ====== -->
+<div id="layer-outside">
+  <canvas id="rainCanvas" class="rain-canvas"></canvas>
+
+  <div class="attic-silhouette">
+    <svg viewBox="0 0 280 200" fill="none">
+      <!-- 阁楼主体 -->
+      <path d="M40 180 L40 100 L140 40 L240 100 L240 180 Z" fill="#0a0e1a" stroke="rgba(56,189,248,0.15)" stroke-width="1"/>
+      <!-- 屋顶 -->
+      <path d="M30 100 L140 30 L250 100" fill="none" stroke="rgba(56,189,248,0.2)" stroke-width="1.5"/>
+      <!-- 窗户 -->
+      <rect x="110" y="80" width="60" height="50" rx="2" fill="rgba(243,193,58,0.08)" stroke="rgba(243,193,58,0.3)" stroke-width="1"/>
+      <line x1="140" y1="80" x2="140" y2="130" stroke="rgba(243,193,58,0.2)" stroke-width="1"/>
+      <line x1="110" y1="105" x2="170" y2="105" stroke="rgba(243,193,58,0.2)" stroke-width="1"/>
+      <!-- 门 -->
+      <rect x="120" y="140" width="40" height="40" rx="2" fill="rgba(157,41,51,0.1)" stroke="rgba(157,41,51,0.3)" stroke-width="1"/>
+      <circle cx="152" cy="160" r="2" fill="rgba(243,193,58,0.5)"/>
+      <!-- 烟囱 -->
+      <rect x="200" y="60" width="16" height="30" fill="#0a0e1a" stroke="rgba(56,189,248,0.15)" stroke-width="1"/>
+      <!-- 烟雾 -->
+      <circle cx="208" cy="55" r="4" fill="rgba(200,220,255,0.1)"/>
+      <circle cx="212" cy="48" r="5" fill="rgba(200,220,255,0.08)"/>
+      <circle cx="216" cy="40" r="6" fill="rgba(200,220,255,0.05)"/>
+    </svg>
+  </div>
+
+  <div class="outside-text">
+    <h1>雨窗阁</h1>
+    <p>有人在等一场雨，有人在等一个故事</p>
+  </div>
+
+  <div class="attic-door" onclick="enterFoyer()">
+    <svg viewBox="0 0 80 120" fill="none">
+      <rect x="8" y="8" width="64" height="104" rx="4" fill="rgba(157,41,51,0.15)" stroke="rgba(157,41,51,0.4)" stroke-width="1.5"/>
+      <rect x="16" y="16" width="48" height="88" rx="2" fill="rgba(243,193,58,0.08)" stroke="rgba(243,193,58,0.2)" stroke-width="1"/>
+      <circle cx="56" cy="60" r="3" fill="rgba(243,193,58,0.6)"/>
+      <!-- 门缝光 -->
+      <line x1="40" y1="16" x2="40" y2="104" stroke="rgba(243,193,58,0.15)" stroke-width="1"/>
+    </svg>
+    <div class="door-hint">点击推门进入</div>
+  </div>
+</div>
+
+<!-- ====== 第二层：玄关（简介） ====== -->
+<div id="layer-foyer">
+  <div class="foyer-content">
+    <h2>欢迎来到雨窗阁</h2>
+    <div class="role-tag">AI工作流实践者 × 产品设计师</div>
+    <p>
+      我是 <span class="highlight">Labeleine雷娜</span>，市场营销专业背景。<br>
+      不懂代码，但借助AI工具，我设计并实现了这个沉浸式写作空间。
+    </p>
+    <p>
+      雨窗阁不是又一个笔记工具——<br>
+      它是 <span class="highlight">独属于你的创作阁楼</span>。<br>
+      推开窗，雨声潺潺；拿起笔，心流自然发生。
+    </p>
+
+    <div class="demo-gif">
+      <div class="demo-gif-placeholder">
+        [动态演示：雨窗阁打字特效 + 雨滴交互]<br>
+        <small style="margin-top:8px">请替换为实际GIF或视频</small>
+      </div>
+    </div>
+
+    <button class="continue-btn" onclick="enterHall()">继续探索 →</button>
+  </div>
+</div>
+
+<!-- ====== 第三层：主厅（功能展示） ====== -->
+<div id="layer-hall">
+  <div class="hall-header">
+    <h2>阁楼功能一览</h2>
+    <p>六大多功能模块，覆盖创作全链路</p>
+  </div>
+
+  <div class="screenshots-grid">
+    <div class="screenshot-card">
+      <div class="screenshot-img">[写作界面截图]</div>
+      <div class="screenshot-info">
+        <h4>🌧️ 氛围系统</h4>
+        <p>动态雨景、氛围音乐、色温调节，一键营造创作心流</p>
+      </div>
+    </div>
+    <div class="screenshot-card">
+      <div class="screenshot-img">[专注模式截图]</div>
+      <div class="screenshot-info">
+        <h4>✍️ 专注写作</h4>
+        <p>实时字数统计、章节管理、分支剧情、专注模式</p>
+      </div>
+    </div>
+    <div class="screenshot-card">
+      <div class="screenshot-img">[番茄钟截图]</div>
+      <div class="screenshot-info">
+        <h4>🍅 番茄钟</h4>
+        <p>任务追踪、专注时长统计、数据可视化图表</p>
+      </div>
+    </div>
+    <div class="screenshot-card">
+      <div class="screenshot-img">[手账本截图]</div>
+      <div class="screenshot-info">
+        <h4>📓 手账本</h4>
+        <p>手绘涂鸦、贴纸拼贴、自定义背景、多页面管理</p>
+      </div>
+    </div>
+    <div class="screenshot-card">
+      <div class="screenshot-img">[角色设定截图]</div>
+      <div class="screenshot-info">
+        <h4>📊 创作辅助</h4>
+        <p>角色设定、灵感便签、写作提示、市场分析</p>
+      </div>
+    </div>
+    <div class="screenshot-card">
+      <div class="screenshot-img">[数据备份截图]</div>
+      <div class="screenshot-info">
+        <h4>💾 数据安全</h4>
+        <p>本地存储、JSON备份导出、完全私人的创作空间</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="floor-roadmap">
+    <h3>阁楼扩建计划</h3>
+    <div class="floor">
+      <div class="floor-number completed">1</div>
+      <div class="floor-info">
+        <h4>核心写作</h4>
+        <p>编辑器、章节管理、项目系统</p>
+      </div>
+      <div class="floor-status completed">已完成</div>
+    </div>
+    <div class="floor">
+      <div class="floor-number completed">2</div>
+      <div class="floor-info">
+        <h4>氛围系统</h4>
+        <p>雨景动画、音乐、色温、背景切换</p>
+      </div>
+      <div class="floor-status completed">已完成</div>
+    </div>
+    <div class="floor">
+      <div class="floor-number planned">3</div>
+      <div class="floor-info">
+        <h4>看书区</h4>
+        <p>EPUB/PDF阅读、书签、书摘收藏</p>
+      </div>
+      <div class="floor-status planned">规划中</div>
+    </div>
+    <div class="floor">
+      <div class="floor-number planned">4</div>
+      <div class="floor-info">
+        <h4>氛围升级</h4>
+        <p>闪电、雪、沙尘暴、列车/洞穴/树屋场景</p>
+      </div>
+      <div class="floor-status planned">规划中</div>
+    </div>
+    <div class="floor">
+      <div class="floor-number planned">5</div>
+      <div class="floor-info">
+        <h4>修复优化</h4>
+        <p>IndexedDB、响应式重构、交互逻辑优化</p>
+      </div>
+      <div class="floor-status planned">规划中</div>
+    </div>
+  </div>
+
+  <div class="cta-section">
+    <h3>准备好进入你的创作阁楼了吗？</h3>
+    <a href="/rain-window-study/" class="cta-btn">体验完整产品 →</a>
+  </div>
+
+  <div class="footer">
+    <div class="name">Labeleine雷娜</div>
+    <div class="role">市场营销背景 × AI工作流实践者</div>
+  </div>
+</div>
+
+<script>
+// 简化的雨滴动画
+const canvas = document.getElementById('rainCanvas');
+const ctx = canvas.getContext('2d');
+let W, H, drops = [];
+
+function resize() {
+  W = canvas.width = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+
+for (let i = 0; i < 150; i++) {
+  drops.push({
+    x: Math.random() * W,
+    y: Math.random() * H,
+    length: Math.random() * 20 + 8,
+    speed: Math.random() * 8 + 2,
+    opacity: Math.random() * 0.4 + 0.1
+  });
+}
+
+function animateRain() {
+  ctx.clearRect(0, 0, W, H);
+  ctx.strokeStyle = 'rgba(200, 220, 255, 0.5)';
+  ctx.lineWidth = 1;
+  ctx.lineCap = 'round';
+
+  for (let drop of drops) {
+    ctx.globalAlpha = drop.opacity;
+    ctx.beginPath();
+    ctx.moveTo(drop.x, drop.y);
+    ctx.lineTo(drop.x - 0.3, drop.y + drop.length);
+    ctx.stroke();
+
+    drop.y += drop.speed;
+    drop.x += 0.05;
+    if (drop.y > H + drop.length) {
+      drop.y = -drop.length;
+      drop.x = Math.random() * W;
+    }
+  }
+  ctx.globalAlpha = 1;
+  requestAnimationFrame(animateRain);
+}
+animateRain();
+
+// 层切换
+function enterFoyer() {
+  document.getElementById('layer-outside').classList.add('hidden');
+  setTimeout(() => {
+    document.getElementById('layer-foyer').classList.add('active');
+  }, 400);
+}
+
+function enterHall() {
+  document.getElementById('layer-foyer').classList.remove('active');
+  setTimeout(() => {
+    document.getElementById('layer-hall').classList.add('active');
+  }, 400);
+}
+</script>
+
+</body>
+</html>
